@@ -1,0 +1,107 @@
+\section{Supervised Sparse Autoencoder}
+\label{app:sae}
+
+\subsection{Model Architecture}
+
+Our supervised SAE extends the standard sparse autoencoder architecture with explicit relation slots and value prediction heads. The configuration is as follows:
+
+\begin{itemize}[leftmargin=*,noitemsep]
+    \item \textbf{Input dimension:} 768 (matching GPT-2 hidden size)
+    \item \textbf{Total latent features:} 100,006
+    \begin{itemize}
+        \item \textit{Free slots:} 100,000 (unsupervised, sparse)
+        \item \textit{Relation slots:} 6 (supervised, one per semantic relation)
+    \end{itemize}
+    \item \textbf{Encoder:} Linear projection $(768 \rightarrow 100{,}006)$ with bias
+    \item \textbf{Decoder:} Linear projection $(100{,}006 \rightarrow 768)$ with bias, initialized as pseudo-inverse of encoder
+    \item \textbf{Value heads:} 6 independent MLPs $(1 \rightarrow 256 \rightarrow 50{,}257)$, mapping relation slot activations to vocabulary logits
+\end{itemize}
+
+\subsection{Multi-Stage Training Protocol}
+
+Training proceeds in two stages to ensure stable convergence:
+
+\begin{itemize}[leftmargin=*,noitemsep]
+    \item \textbf{Stage 1 (Reconstruction-Only):} 50 epochs focusing solely on autoencoding quality before introducing binding constraints
+    \item \textbf{Stage 2 (Full Supervision):} 100 epochs with complete loss function
+\end{itemize}
+
+\subsection{Loss Function}
+
+The total training objective (see Section~4 of the main paper) combines six components. In Stage~1 (50 epochs), only reconstruction loss is active to stabilize the encoder-decoder. In Stage~2 (100 epochs), all six losses are jointly optimized:
+
+\begin{align}
+\mathcal{L}_{\text{total}} &= \lambda_{\text{recon}} \mathcal{L}_{\text{recon}} + \lambda_{\text{sparse}} \mathcal{L}_{\text{sparse}} + \lambda_{\text{align}} \mathcal{L}_{\text{align}} \nonumber \\
+&\quad + \lambda_{\text{indep}} \mathcal{L}_{\text{indep}} + \lambda_{\text{ortho}} \mathcal{L}_{\text{ortho}} + \lambda_{\text{value}} \mathcal{L}_{\text{value}}
+\end{align}
+
+Each component serves a specific purpose:
+
+\paragraph{Reconstruction Loss.} 
+\begin{equation}
+\mathcal{L}_{\text{recon}} = \text{MSE}(\hat{h}, h) = \frac{1}{d} \sum_{i=1}^{d} (\hat{h}_i - h_i)^2
+\end{equation}
+Measures mean squared error between original activation $h$ and reconstructed activation $\hat{h} = W_{\text{dec}} \cdot z$, where $d=768$ is the hidden dimension. This ensures the SAE preserves information necessary for the language model's downstream predictions while learning a compressed latent representation.
+
+\paragraph{Sparsity Loss.} 
+\begin{equation}
+\mathcal{L}_{\text{sparse}} = \frac{1}{B \cdot n_{\text{free}}} \sum_{b=1}^{B} \sum_{j=1}^{n_{\text{free}}} |z_{b,j}|
+\end{equation}
+Enforces L1 penalty on the 100,000 free slots across batch size $B$, encouraging the model to activate only a small subset of features per sample. Sparse activations improve interpretability by ensuring each latent feature captures distinct semantic properties rather than distributing information diffusely.
+
+\paragraph{Alignment Loss.} 
+\begin{equation}
+\mathcal{L}_{\text{align}} = \text{MSE}(z_{\text{rel}}, y) = \frac{1}{B \cdot 6} \sum_{b=1}^{B} \sum_{r=1}^{6} (z_{b, n_{\text{free}}+r} - y_{b,r})^2
+\end{equation}
+Provides supervised guidance where $y$ is a one-hot vector with $y_{b,\text{rule\_idx}_b} = 1$ indicating the ground-truth relation type. This enforces that the 6 relation slots (indices $n_{\text{free}}+1$ through $n_{\text{free}}+6$) activate according to semantic relations, enabling explicit binding of question types to specific latent dimensions.
+
+\paragraph{Independence Loss.} 
+\begin{equation}
+\mathcal{L}_{\text{indep}} = \sum_{i \neq j} \left( \frac{1}{B} \sum_{b=1}^{B} (z_{b,i} - \bar{z}_i)(z_{b,j} - \bar{z}_j) \right)^2
+\end{equation}
+where $\bar{z}_i = \frac{1}{B}\sum_{b=1}^{B} z_{b,i}$ is the mean activation of slot $i$. This penalizes off-diagonal covariance among free slots, encouraging decorrelation to reduce redundancy. Disentangled features enable better interpretability and more efficient use of the latent space.
+
+\paragraph{Orthogonality Loss.} 
+\begin{equation}
+\mathcal{L}_{\text{ortho}} = \sum_{r=1}^{6} \sum_{j=1}^{n_{\text{free}}} \left( \frac{1}{B} \sum_{b=1}^{B} (z_{b,n_{\text{free}}+r} - \bar{z}_r)(z_{b,j} - \bar{z}_j) \right)^2
+\end{equation}
+Enforces statistical independence between supervised relation slots and unsupervised free slots by minimizing their cross-covariance. This prevents relation slots from encoding information already captured by free features, ensuring clean separation between task-specific and general-purpose representations.
+
+\paragraph{Value Prediction Loss.} 
+\begin{equation}
+\mathcal{L}_{\text{value}} = \text{CrossEntropy}(\text{ValueHead}_r(z_{b,n_{\text{free}}+r}), t_b)
+\end{equation}
+where $t_b$ is the first token of the ground-truth answer and $r = \text{rule\_idx}_b$. Each of the 6 value heads is a 2-layer MLP $(1 \to 256 \to 50{,}257)$ that decodes relation slot activations to vocabulary logits. This validates that relation slots contain sufficient information for answer generation and provides an auxiliary training signal.
+
+\subsection{Loss Weight Selection}
+
+The loss components are weighted to balance competing objectives:
+
+\begin{itemize}[leftmargin=*,noitemsep]
+    \item $\lambda_{\text{recon}} = 1.0$ --- Highest priority given to faithful reconstruction to maintain model performance. This ensures the SAE does not distort the information flow through the network.
+    
+    \item $\lambda_{\text{sparse}} = 1 \times 10^{-3}$ --- Gentle L1 penalty on free slots. This small weight prevents over-suppression of activations while still encouraging selective feature usage. Stronger sparsity penalties ($\lambda > 10^{-2}$) caused excessive dead neurons and degraded reconstruction quality in preliminary experiments.
+    
+    \item $\lambda_{\text{align}} = 1.0$ --- Strong supervision signal to ensure reliable slot-relation binding. This weight is balanced with reconstruction to achieve $>95\%$ binding accuracy on in-distribution templates (97.8\% reported in Section~5.1, Table~2).
+    
+    \item $\lambda_{\text{indep}} = 1 \times 10^{-2}$ --- Moderate decorrelation pressure among free slots. This encourages disentangled representations without interfering with primary reconstruction and binding objectives. The quadratic covariance computation scales as $O(n_{\text{free}}^2)$, so this loss is only computed when $n_{\text{free}} \leq 10{,}000$ for efficiency. In our configuration with 100,000 free slots, this term is skipped.
+    
+    \item $\lambda_{\text{ortho}} = 1 \times 10^{-2}$ --- Moderate orthogonality constraint between relation and free slots. This maintains separation between supervised and unsupervised features, preventing information leakage that could compromise the interpretability of relation slots.
+    
+    \item $\lambda_{\text{value}} = 0.5$ --- Balanced weight for answer prediction. This auxiliary task provides a training signal to ensure relation slots encode semantically meaningful information, but is weighted lower than alignment to avoid dominating the optimization. Value heads achieve $>90\%$ answer accuracy (91.2\% reported) when predicting directly from relation slots.
+\end{itemize}
+
+
+\subsection{Training Hyperparameters}
+
+\paragraph{Optimizer Configuration.} We use AdamW~\citep{loshchilov2019decoupledweightdecayregularization} with the following settings:
+\begin{itemize}[leftmargin=*,noitemsep]
+    \item \textbf{Learning rate:} $1 \times 10^{-3}$ (constant, no warmup or decay)
+    \item \textbf{Weight decay:} $0.0$ (L2 regularization disabled to avoid interfering with explicit sparsity constraints)
+    \item \textbf{Betas:} $(0.9, 0.999)$ (default momentum coefficients)
+    \item \textbf{Epsilon:} $1 \times 10^{-8}$ (numerical stability constant)
+    \item \textbf{Batch size:} 64 samples per update
+    \item \textbf{Gradient clipping:} None (training was stable without clipping)
+\end{itemize}
+
+\paragraph{Training Schedule.} The constant learning rate without decay was chosen because the two-stage training protocol naturally provides curriculum learning: Stage~1 establishes a good initialization for the encoder-decoder, after which Stage~2 refines the latent structure. Preliminary experiments with cosine annealing showed no improvement over constant learning rate for this setting.

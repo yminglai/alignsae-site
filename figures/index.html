@@ -17,7 +17,7 @@
   <meta property="og:site_name" content="University of Arizona & Peking University">
   <meta property="og:title" content="AlignSAE: Concept-Aligned Sparse Autoencoders">
   <meta property="og:description" content="AlignSAE aligns SAE features with predefined ontologies through supervised post-training, enabling precise causal interventions and interpretable control over LLM representations.">
-  <meta property="og:url" content="https://ymingl.com/alignsae-site">
+  <meta property="og:url" content="https://yminglai.github.io/alignsae-site">
   <meta property="og:image" content="plots/logo.png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
@@ -184,7 +184,7 @@
     "license": "https://creativecommons.org/licenses/by/4.0/",
     "mainEntity": {
       "@type": "WebPage",
-      "@id": "https://ymingl.com/alignsae-site"
+      "@id": "https://yminglai.github.io/alignsae-site"
     },
     "about": [
       {
@@ -202,10 +202,10 @@
   <!-- Website/Organization Structured Data -->
   <script type="application/ld+json">
   {
-    "@context": "https://schema.org",
+    "@context": "https://clulab.org",
     "@type": "Organization",
-    "name": "University of Arizona NLP Lab",
-    "url": "https://www.arizona.edu",
+    "name": "Computational Language Understanding NLP Lab, University of Arizona",
+    "url": "",
     "logo": "plots/logo.png",
     "sameAs": [
       "https://github.com/yminglai/AlignSAE"
@@ -221,6 +221,49 @@
     <i class="fas fa-chevron-up"></i>
   </button>
 
+  <!-- More Works Dropdown -->
+  <div class="more-works-container">
+    <button class="more-works-btn" onclick="toggleMoreWorks()" title="View More Works from Our Lab">
+      <i class="fas fa-flask"></i>
+      More Works
+      <i class="fas fa-chevron-down dropdown-arrow"></i>
+    </button>
+    <div class="more-works-dropdown" id="moreWorksDropdown">
+      <div class="dropdown-header">
+        <h4>Related Works in Mechanistic Interpretability</h4>
+        <button class="close-btn" onclick="toggleMoreWorks()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="works-list">
+        <a href="https://arxiv.org/abs/2309.08600" class="work-item" target="_blank">
+          <div class="work-info">
+            <h5>Sparse Autoencoders Find Highly Interpretable Features</h5>
+            <p>Foundational work on using SAEs for mechanistic interpretability of language models.</p>
+            <span class="work-venue">ICLR 2024</span>
+          </div>
+          <i class="fas fa-external-link-alt"></i>
+        </a>
+        <a href="https://arxiv.org/abs/2403.19647" class="work-item" target="_blank">
+          <div class="work-info">
+            <h5>Sparse Feature Circuits</h5>
+            <p>Discovering and editing interpretable causal graphs in language models using sparse features.</p>
+            <span class="work-venue">arXiv 2024</span>
+          </div>
+          <i class="fas fa-external-link-alt"></i>
+        </a>
+        <a href="https://transformer-circuits.pub/2022/toy_model/index.html" class="work-item" target="_blank">
+          <div class="work-info">
+            <h5>Toy Models of Superposition</h5>
+            <p>Understanding how neural networks represent more features than dimensions through superposition.</p>
+            <span class="work-venue">Anthropic 2022</span>
+          </div>
+          <i class="fas fa-external-link-alt"></i>
+        </a>
+      </div>
+    </div>
+  </div>
+
   <main id="main-content">
   <section class="hero">
     <div class="hero-body">
@@ -231,7 +274,7 @@
               <img src="plots/logo.png" alt="AlignSAE Logo" style="max-width: 120px; height: auto;">
             </div>
             <h1 class="title is-1 publication-title">AlignSAE: Concept-Aligned Sparse Autoencoders</h1>
-            <div class="publication-authors">
+            <div class="is-size-5 publication-authors">
               <span class="author-block">
                 <a href="https://ymingl.com" target="_blank">Minglai Yang</a><sup>1*</sup>,</span>
               <span class="author-block">
@@ -246,12 +289,12 @@
                 <a href="https://liangmingpan.bio/" target="_blank">Liangming Pan</a><sup>2*</sup></span>
             </div>
 
-            <div class="publication-authors" style="margin-top: 1rem;">
+            <div class="is-size-5 publication-authors">
               <span class="author-block"><sup>1</sup>University of Arizona&nbsp;&nbsp;</span>
               <span class="author-block"><sup>2</sup>Peking University&nbsp;&nbsp;</span>
               <span class="author-block"><sup>3</sup>Ludwig Maximilian University of Munich</span>
               <br>
-              <span class="eql-cntrb" style="font-size: 1.1rem;"><sup>*</sup>Corresponding Authors</span>
+              <span class="eql-cntrb"><small><sup>*</sup>Corresponding Authors</small></span>
             </div>
 
             <div class="column has-text-centered">
@@ -372,61 +415,109 @@
           </div>
         </div>
       </div>
-      
-      <!-- Key Slides Carousel -->
-      <div style="margin-top: 3rem;">
-        <h2 class="title is-2 has-text-centered" style="margin-bottom: 2rem; font-weight: 700;">📊 Slide Show</h2>
-        <div id="contributions-carousel" class="carousel results-carousel">
-          <div class="item">
-            <img src="AlignSAE/Slide5.png" alt="Motivation and Problem" loading="lazy" style="width: 100%; max-width: 2000px; margin: 0 auto; display: block; cursor: pointer; image-rendering: -webkit-optimize-contrast; image-rendering: high-quality;" onclick="window.open('https://ymingl.com/pdfs/alignsae_slides.pdf', '_blank')">
-          </div>
-          <div class="item">
-            <img src="AlignSAE/Slide8.png" alt="Method Overview" loading="lazy" style="width: 100%; max-width: 2000px; margin: 0 auto; display: block; cursor: pointer; image-rendering: -webkit-optimize-contrast; image-rendering: high-quality;" onclick="window.open('https://ymingl.com/pdfs/alignsae_slides.pdf', '_blank')">
-          </div>
-          <div class="item">
-            <img src="AlignSAE/Slide11.png" alt="Loss Functions" loading="lazy" style="width: 100%; max-width: 2000px; margin: 0 auto; display: block; cursor: pointer; image-rendering: -webkit-optimize-contrast; image-rendering: high-quality;" onclick="window.open('https://ymingl.com/pdfs/alignsae_slides.pdf', '_blank')">
-          </div>
-          <div class="item">
-            <img src="AlignSAE/Slide12.png" alt="Training Curriculum" loading="lazy" style="width: 100%; max-width: 2000px; margin: 0 auto; display: block; cursor: pointer; image-rendering: -webkit-optimize-contrast; image-rendering: high-quality;" onclick="window.open('https://ymingl.com/pdfs/alignsae_slides.pdf', '_blank')">
-          </div>
-          <div class="item">
-            <img src="AlignSAE/Slide13.png" alt="Implementation Details" loading="lazy" style="width: 100%; max-width: 2000px; margin: 0 auto; display: block; cursor: pointer; image-rendering: -webkit-optimize-contrast; image-rendering: high-quality;" onclick="window.open('https://ymingl.com/pdfs/alignsae_slides.pdf', '_blank')">
-          </div>
-          <div class="item">
-            <img src="AlignSAE/Slide14.png" alt="Experimental Setup" loading="lazy" style="width: 100%; max-width: 2000px; margin: 0 auto; display: block; cursor: pointer; image-rendering: -webkit-optimize-contrast; image-rendering: high-quality;" onclick="window.open('https://ymingl.com/pdfs/alignsae_slides.pdf', '_blank')">
-          </div>
-          <div class="item">
-            <img src="AlignSAE/Slide15.png" alt="Binding Results" loading="lazy" style="width: 100%; max-width: 2000px; margin: 0 auto; display: block; cursor: pointer; image-rendering: -webkit-optimize-contrast; image-rendering: high-quality;" onclick="window.open('https://ymingl.com/pdfs/alignsae_slides.pdf', '_blank')">
-          </div>
-          <div class="item">
-            <img src="AlignSAE/Slide18.png" alt="Swap Interventions" loading="lazy" style="width: 100%; max-width: 2000px; margin: 0 auto; display: block; cursor: pointer; image-rendering: -webkit-optimize-contrast; image-rendering: high-quality;" onclick="window.open('https://ymingl.com/pdfs/alignsae_slides.pdf', '_blank')">
-          </div>
-          <div class="item">
-            <img src="AlignSAE/Slide21.png" alt="Fragmentation Analysis" loading="lazy" style="width: 100%; max-width: 2000px; margin: 0 auto; display: block; cursor: pointer; image-rendering: -webkit-optimize-contrast; image-rendering: high-quality;" onclick="window.open('https://ymingl.com/pdfs/alignsae_slides.pdf', '_blank')">
-          </div>
-          <div class="item">
-            <img src="AlignSAE/Slide22.png" alt="Multi-hop Reasoning" loading="lazy" style="width: 100%; max-width: 2000px; margin: 0 auto; display: block; cursor: pointer; image-rendering: -webkit-optimize-contrast; image-rendering: high-quality;" onclick="window.open('https://ymingl.com/pdfs/alignsae_slides.pdf', '_blank')">
-          </div>
-          <div class="item">
-            <img src="AlignSAE/Slide25.png" alt="Grokking Analysis" loading="lazy" style="width: 100%; max-width: 2000px; margin: 0 auto; display: block; cursor: pointer; image-rendering: -webkit-optimize-contrast; image-rendering: high-quality;" onclick="window.open('https://ymingl.com/pdfs/alignsae_slides.pdf', '_blank')">
-          </div>
-          <div class="item">
-            <img src="AlignSAE/Slide26.png" alt="Related Work" loading="lazy" style="width: 100%; max-width: 2000px; margin: 0 auto; display: block; cursor: pointer; image-rendering: -webkit-optimize-contrast; image-rendering: high-quality;" onclick="window.open('https://ymingl.com/pdfs/alignsae_slides.pdf', '_blank')">
-          </div>
-          <div class="item">
-            <img src="AlignSAE/Slide27.png" alt="Limitations" loading="lazy" style="width: 100%; max-width: 2000px; margin: 0 auto; display: block; cursor: pointer; image-rendering: -webkit-optimize-contrast; image-rendering: high-quality;" onclick="window.open('https://ymingl.com/pdfs/alignsae_slides.pdf', '_blank')">
-          </div>
-          <div class="item">
-            <img src="AlignSAE/Slide28.png" alt="Conclusion" loading="lazy" style="width: 100%; max-width: 2000px; margin: 0 auto; display: block; cursor: pointer; image-rendering: -webkit-optimize-contrast; image-rendering: high-quality;" onclick="window.open('https://ymingl.com/pdfs/alignsae_slides.pdf', '_blank')">
-          </div>
-          <div class="item">
-            <img src="AlignSAE/Slide30.png" alt="Thank You" loading="lazy" style="width: 100%; max-width: 2000px; margin: 0 auto; display: block; cursor: pointer; image-rendering: -webkit-optimize-contrast; image-rendering: high-quality;" onclick="window.open('https://ymingl.com/pdfs/alignsae_slides.pdf', '_blank')">
-          </div>
-        </div>
-      </div>
     </div>
   </div>
 </section>
+
+<!-- Main Results Carousel -->
+<section class="hero is-small">
+  <div class="hero-body">
+    <div class="container">
+      <h2 class="title is-3 has-text-centered">Key Results</h2>
+      <div id="results-carousel" class="carousel results-carousel">
+       <div class="item">
+        <img src="plots/heatmap_0_6.png" alt="Layer-wise binding comparison" loading="lazy" style="width: 100%; max-width: 1000px; margin: 0 auto; display: block;"/>
+        <div class="subtitle has-text-centered" style="margin-top: 1.5rem;">
+          <p><strong>Concept-Slot Binding Emerges in Mid-Layers</strong></p>
+          <p style="margin-top: 1rem;">
+            Diagonal accuracy: $\text{Diag} = \frac{1}{|\mathcal{R}|}\sum_{r=1}^{|\mathcal{R}|} \mathbf{C}_{rr}$ where $\mathbf{C}$ is the normalized confusion matrix.
+      <div class="item">
+        <img src="plots/bind&control.png" alt="Binding generalization and swap controllability" loading="lazy" style="width: 100%; max-width: 1000px; margin: 0 auto; display: block;"/>
+        <div class="subtitle has-text-centered" style="margin-top: 1.5rem;">
+          <p><strong>Strong Binding & Causal Control</strong></p>
+          <p style="margin-top: 1rem;">
+            <strong>Binding accuracy:</strong> $\text{Acc}_{\text{bind}} = \frac{1}{N}\sum_{i=1}^N \mathbb{1}[\arg\max_j z^{(i)}_{\text{concept},j} = r_i^*]$
+      <div class="item">
+        <img src="plots/bind_generalization.png" alt="Concept fragmentation comparison" loading="lazy" style="width: 100%; max-width: 1000px; margin: 0 auto; display: block;"/>
+        <div class="subtitle has-text-centered" style="margin-top: 1.5rem;">
+          <p><strong>Reduced Fragmentation, Increased Concentration</strong></p>
+          <p style="margin-top: 1rem;">
+            <strong>Effective features:</strong> $\text{EffFeat}(c) = \exp\left(-\sum_k B_{c,k}\log B_{c,k}\right)$ where $B_{c,k} = \frac{A_{c,k}}{\sum_{k'}A_{c,k'}}$
+     <div class="item">
+      <img src="plots/swap_controllability_heatmap.png" alt="Swap controllability heatmap" loading="lazy" style="width: 100%; max-width: 1000px; margin: 0 auto; display: block;"/>
+      <div class="subtitle has-text-centered" style="margin-top: 1.5rem;">
+        <p><strong>Swap Controllability Across Layers</strong></p>
+        <p style="margin-top: 1rem;">
+          <strong>Intervention:</strong> $\mathbf{h}'_{l,t} = \mathbf{h}_{l,t} + \alpha \cdot \mathbf{W}_{\text{dec}}\mathbf{e}_j$ for target slot $j$
+    <div class="item">
+      <img src="plots/final_evaluation_metrics.png" alt="Step-wise alignment" loading="lazy" style="width: 100%; max-width: 1000px; margin: 0 auto; display: block;"/>
+      <div class="subtitle has-text-centered" style="margin-top: 1.5rem;">
+        <p><strong>Step-wise Alignment for Multi-Hop Reasoning</strong></p>
+        <p style="margin-top: 1rem;">
+          <strong>2-hop task:</strong> $e_1 \xrightarrow{r_1} e_2 \xrightarrow{r_2} e_3$ with model output $(e_2, e_3)$
+    <div class="item">
+      <img src="figures/combined_curves_55.png" alt="Grokking dynamics" loading="lazy" style="width: 100%; max-width: 1000px; margin: 0 auto; display: block;"/>
+      <div class="subtitle has-text-centered" style="margin-top: 1.5rem;">
+        <p><strong>Concept Binding and Grokking</strong></p>
+        <p style="margin-top: 1rem;">
+          <strong>Grokking phenomenon:</strong> Training loss decreases smoothly while validation accuracy exhibits delayed generalization
+        </p>
+        <p style="margin-top: 0.5rem;">
+          <strong>Binding transition:</strong> Pre-grokking (epoch 10): $\text{Acc}_{\text{bind}}^{(t_1)} = 38.4\%$; Post-grokking (epoch 40): $\text{Acc}_{\text{bind}}^{(t_1)} = 100\%$
+        </p>
+        <p style="margin-top: 0.5rem; color: #555;">
+          Concept representations transition from diffuse to diagonal, revealing mechanistic insights into compositional generalization
+        </p>
+      </div>
+    </div>Binding accuracy: 100% at both steps. Swap success: AlignSAE $\approx 4\times$ Traditional SAE
+        </p>
+      </div>
+    </div>Layer 6: $\alpha=1 \rightarrow 54\%$, $\alpha=2 \rightarrow 85\%$, $\alpha=10 \rightarrow 23\%$ (narrow operating regime)
+        </p>
+      </div>
+    </div>  AlignSAE: $\text{EffFeat} \approx 1$, $\text{Top1C} > 0.8$ vs. Traditional SAE: $\text{EffFeat} > 100$, $\text{Top1C} \approx 0$
+          </p>
+        </div>
+     </div> Layer 6: $\text{Acc}_{\text{bind}} = 100\%$, $\text{SwapSuccess}(\alpha=2) = 85\%$
+          </p>
+        </div>
+      </div>v>
+      </div>
+      <div class="item">
+        <img src="plots/bind&control.png" alt="Binding generalization and swap controllability" loading="lazy" style="width: 100%; max-width: 1000px; margin: 0 auto; display: block;"/>
+        <h2 class="subtitle has-text-centered" style="margin-top: 1.5rem;">
+          <strong>Strong Binding & Causal Control:</strong> Left: AlignSAE achieves near-perfect training slot accuracy and 91% unseen template generalization. Right: Diagonal accuracy and swap success both peak at mid-layers (5-11), with Layer 6 achieving 100% binding and 85% swap success.
+        </h2>
+      </div>
+      <div class="item">
+        <img src="plots/bind_generalization.png" alt="Concept fragmentation comparison" loading="lazy" style="width: 100%; max-width: 1000px; margin: 0 auto; display: block;"/>
+        <h2 class="subtitle has-text-centered" style="margin-top: 1.5rem;">
+          <strong>Reduced Fragmentation, Increased Concentration:</strong> AlignSAE sharply reduces effective features per concept (EffFeat ≈ 1) and increases Top-1 concentration from mid-layers onward, yielding compact, interpretable representations compared to traditional SAEs.
+        </h2>
+     </div>
+     <div class="item">
+      <img src="plots/swap_controllability_heatmap.png" alt="Swap controllability heatmap" loading="lazy" style="width: 100%; max-width: 1000px; margin: 0 auto; display: block;"/>
+      <h2 class="subtitle has-text-centered" style="margin-top: 1.5rem;">
+        <strong>Swap Controllability Across Layers:</strong> Moderate amplification (α≈2) reliably switches answer types at mid-layers (5-11). At Layer 6, success rises from 54% (α=1.0) to 85% (α=2.0), but drops to 23% at α=10, revealing a narrow operating regime for effective control.
+      </h2>
+    </div>
+    <div class="item">
+      <img src="plots/final_evaluation_metrics.png" alt="Step-wise alignment" loading="lazy" style="width: 100%; max-width: 1000px; margin: 0 auto; display: block;"/>
+      <h2 class="subtitle has-text-centered" style="margin-top: 1.5rem;">
+        <strong>Step-wise Alignment for Multi-Hop Reasoning:</strong> In 2-hop tasks, R1 activates at E2 and R2 at E3, with clean diagonal binding at each step (100% accuracy). This enables compositional reasoning with 4× higher swap success than traditional SAEs.
+      </h2>
+    </div>
+    <div class="item">
+      <img src="figures/combined_curves_55.png" alt="Grokking dynamics" loading="lazy" style="width: 100%; max-width: 1000px; margin: 0 auto; display: block;"/>
+      <h2 class="subtitle has-text-centered" style="margin-top: 1.5rem;">
+        <strong>Concept Binding and Grokking:</strong> Pre-grokking (Epoch 10), binding is diffuse (38.4% at Token 1). Post-grokking (Epoch 40), it becomes perfectly diagonal (100%), revealing how generalization emerges through compositional concept consolidation.
+      </h2>
+    </div>
+  </div>
+</div>
+</div>
+</section>
+<!-- End image carousel -->
 
 
 <!-- Method Section -->
@@ -498,10 +589,9 @@
           <li><strong>Lightweight value heads</strong> for diagnostic validation of slot informativeness</li>
         </ul>
         <div style="text-align: center; margin-top: 2rem;">
-          <img src="plots/Picture1.png" alt="AlignSAE Architecture Diagram" style="width: 100%; max-width: 800px; margin: 0 auto; display: block;">
-          <p class="subtitle has-text-centered" style="margin-top: 1rem; color: #555;">
-            Input activation $h$ is encoded into latent code $z$, split into supervised Concept Slots and unsupervised Free Features
-          </p>
+          <object data="plots/plot_mechanism.pdf" type="application/pdf" width="100%" height="500" style="max-width: 800px;">
+            <p>Your browser does not support PDFs. <a href="plots/plot_mechanism.pdf">Download the mechanism diagram</a>.</p>
+          </object>
         </div>
       </div>
     </div>
@@ -543,6 +633,63 @@
   </div>
 </section>
 
+<!-- Slides Preview -->
+<section class="hero is-small is-light">
+  <div class="hero-body">
+    <div class="container">
+      <h2 class="title is-3 has-text-centered">Presentation Slides</h2>
+      <div class="columns is-centered">
+        <div class="column is-10">
+          <div id="slides-carousel" class="carousel results-carousel">
+            <div class="item"><img src="AlignSAE/Slide1.png" alt="Slide 1" style="width: 100%; max-width: 1200px; margin: 0 auto; display: block; cursor: pointer;" onclick="window.open('https://ymingl.com/assets/pdf/AlignSAEslides.pdf', '_blank')"></div>
+            <div class="item"><img src="AlignSAE/Slide2.png" alt="Slide 2" style="width: 100%; max-width: 1200px; margin: 0 auto; display: block; cursor: pointer;" onclick="window.open('https://ymingl.com/assets/pdf/AlignSAEslides.pdf', '_blank')"></div>
+            <div class="item"><img src="AlignSAE/Slide3.png" alt="Slide 3" style="width: 100%; max-width: 1200px; margin: 0 auto; display: block; cursor: pointer;" onclick="window.open('https://ymingl.com/assets/pdf/AlignSAEslides.pdf', '_blank')"></div>
+            <div class="item"><img src="AlignSAE/Slide4.png" alt="Slide 4" style="width: 100%; max-width: 1200px; margin: 0 auto; display: block; cursor: pointer;" onclick="window.open('https://ymingl.com/assets/pdf/AlignSAEslides.pdf', '_blank')"></div>
+            <div class="item"><img src="AlignSAE/Slide5.png" alt="Slide 5" style="width: 100%; max-width: 1200px; margin: 0 auto; display: block; cursor: pointer;" onclick="window.open('https://ymingl.com/assets/pdf/AlignSAEslides.pdf', '_blank')"></div>
+            <div class="item"><img src="AlignSAE/Slide6.png" alt="Slide 6" style="width: 100%; max-width: 1200px; margin: 0 auto; display: block; cursor: pointer;" onclick="window.open('https://ymingl.com/assets/pdf/AlignSAEslides.pdf', '_blank')"></div>
+            <div class="item"><img src="AlignSAE/Slide7.png" alt="Slide 7" style="width: 100%; max-width: 1200px; margin: 0 auto; display: block; cursor: pointer;" onclick="window.open('https://ymingl.com/assets/pdf/AlignSAEslides.pdf', '_blank')"></div>
+            <div class="item"><img src="AlignSAE/Slide8.png" alt="Slide 8" style="width: 100%; max-width: 1200px; margin: 0 auto; display: block; cursor: pointer;" onclick="window.open('https://ymingl.com/assets/pdf/AlignSAEslides.pdf', '_blank')"></div>
+            <div class="item"><img src="AlignSAE/Slide9.png" alt="Slide 9" style="width: 100%; max-width: 1200px; margin: 0 auto; display: block; cursor: pointer;" onclick="window.open('https://ymingl.com/assets/pdf/AlignSAEslides.pdf', '_blank')"></div>
+            <div class="item"><img src="AlignSAE/Slide10.png" alt="Slide 10" style="width: 100%; max-width: 1200px; margin: 0 auto; display: block; cursor: pointer;" onclick="window.open('https://ymingl.com/assets/pdf/AlignSAEslides.pdf', '_blank')"></div>
+            <div class="item"><img src="AlignSAE/Slide11.png" alt="Slide 11" style="width: 100%; max-width: 1200px; margin: 0 auto; display: block; cursor: pointer;" onclick="window.open('https://ymingl.com/assets/pdf/AlignSAEslides.pdf', '_blank')"></div>
+            <div class="item"><img src="AlignSAE/Slide12.png" alt="Slide 12" style="width: 100%; max-width: 1200px; margin: 0 auto; display: block; cursor: pointer;" onclick="window.open('https://ymingl.com/assets/pdf/AlignSAEslides.pdf', '_blank')"></div>
+            <div class="item"><img src="AlignSAE/Slide13.png" alt="Slide 13" style="width: 100%; max-width: 1200px; margin: 0 auto; display: block; cursor: pointer;" onclick="window.open('https://ymingl.com/assets/pdf/AlignSAEslides.pdf', '_blank')"></div>
+            <div class="item"><img src="AlignSAE/Slide14.png" alt="Slide 14" style="width: 100%; max-width: 1200px; margin: 0 auto; display: block; cursor: pointer;" onclick="window.open('https://ymingl.com/assets/pdf/AlignSAEslides.pdf', '_blank')"></div>
+            <div class="item"><img src="AlignSAE/Slide15.png" alt="Slide 15" style="width: 100%; max-width: 1200px; margin: 0 auto; display: block; cursor: pointer;" onclick="window.open('https://ymingl.com/assets/pdf/AlignSAEslides.pdf', '_blank')"></div>
+            <div class="item"><img src="AlignSAE/Slide16.png" alt="Slide 16" style="width: 100%; max-width: 1200px; margin: 0 auto; display: block; cursor: pointer;" onclick="window.open('https://ymingl.com/assets/pdf/AlignSAEslides.pdf', '_blank')"></div>
+            <div class="item"><img src="AlignSAE/Slide17.png" alt="Slide 17" style="width: 100%; max-width: 1200px; margin: 0 auto; display: block; cursor: pointer;" onclick="window.open('https://ymingl.com/assets/pdf/AlignSAEslides.pdf', '_blank')"></div>
+            <div class="item"><img src="AlignSAE/Slide18.png" alt="Slide 18" style="width: 100%; max-width: 1200px; margin: 0 auto; display: block; cursor: pointer;" onclick="window.open('https://ymingl.com/assets/pdf/AlignSAEslides.pdf', '_blank')"></div>
+            <div class="item"><img src="AlignSAE/Slide19.png" alt="Slide 19" style="width: 100%; max-width: 1200px; margin: 0 auto; display: block; cursor: pointer;" onclick="window.open('https://ymingl.com/assets/pdf/AlignSAEslides.pdf', '_blank')"></div>
+            <div class="item"><img src="AlignSAE/Slide20.png" alt="Slide 20" style="width: 100%; max-width: 1200px; margin: 0 auto; display: block; cursor: pointer;" onclick="window.open('https://ymingl.com/assets/pdf/AlignSAEslides.pdf', '_blank')"></div>
+            <div class="item"><img src="AlignSAE/Slide21.png" alt="Slide 21" style="width: 100%; max-width: 1200px; margin: 0 auto; display: block; cursor: pointer;" onclick="window.open('https://ymingl.com/assets/pdf/AlignSAEslides.pdf', '_blank')"></div>
+            <div class="item"><img src="AlignSAE/Slide22.png" alt="Slide 22" style="width: 100%; max-width: 1200px; margin: 0 auto; display: block; cursor: pointer;" onclick="window.open('https://ymingl.com/assets/pdf/AlignSAEslides.pdf', '_blank')"></div>
+            <div class="item"><img src="AlignSAE/Slide23.png" alt="Slide 23" style="width: 100%; max-width: 1200px; margin: 0 auto; display: block; cursor: pointer;" onclick="window.open('https://ymingl.com/assets/pdf/AlignSAEslides.pdf', '_blank')"></div>
+            <div class="item"><img src="AlignSAE/Slide24.png" alt="Slide 24" style="width: 100%; max-width: 1200px; margin: 0 auto; display: block; cursor: pointer;" onclick="window.open('https://ymingl.com/assets/pdf/AlignSAEslides.pdf', '_blank')"></div>
+            <div class="item"><img src="AlignSAE/Slide25.png" alt="Slide 25" style="width: 100%; max-width: 1200px; margin: 0 auto; display: block; cursor: pointer;" onclick="window.open('https://ymingl.com/assets/pdf/AlignSAEslides.pdf', '_blank')"></div>
+            <div class="item"><img src="AlignSAE/Slide26.png" alt="Slide 26" style="width: 100%; max-width: 1200px; margin: 0 auto; display: block; cursor: pointer;" onclick="window.open('https://ymingl.com/assets/pdf/AlignSAEslides.pdf', '_blank')"></div>
+            <div class="item"><img src="AlignSAE/Slide27.png" alt="Slide 27" style="width: 100%; max-width: 1200px; margin: 0 auto; display: block; cursor: pointer;" onclick="window.open('https://ymingl.com/assets/pdf/AlignSAEslides.pdf', '_blank')"></div>
+            <div class="item"><img src="AlignSAE/Slide28.png" alt="Slide 28" style="width: 100%; max-width: 1200px; margin: 0 auto; display: block; cursor: pointer;" onclick="window.open('https://ymingl.com/assets/pdf/AlignSAEslides.pdf', '_blank')"></div>
+            <div class="item"><img src="AlignSAE/Slide29.png" alt="Slide 29" style="width: 100%; max-width: 1200px; margin: 0 auto; display: block; cursor: pointer;" onclick="window.open('https://ymingl.com/assets/pdf/AlignSAEslides.pdf', '_blank')"></div>
+            <div class="item"><img src="AlignSAE/Slide30.png" alt="Slide 30" style="width: 100%; max-width: 1200px; margin: 0 auto; display: block; cursor: pointer;" onclick="window.open('https://ymingl.com/assets/pdf/AlignSAEslides.pdf', '_blank')"></div>
+            <div class="item"><img src="AlignSAE/Slide31.png" alt="Slide 31" style="width: 100%; max-width: 1200px; margin: 0 auto; display: block; cursor: pointer;" onclick="window.open('https://ymingl.com/assets/pdf/AlignSAEslides.pdf', '_blank')"></div>
+            <div class="item"><img src="AlignSAE/Slide32.png" alt="Slide 32" style="width: 100%; max-width: 1200px; margin: 0 auto; display: block; cursor: pointer;" onclick="window.open('https://ymingl.com/assets/pdf/AlignSAEslides.pdf', '_blank')"></div>
+          </div>
+          <p style="margin-top: 1.5rem; text-align: center;">
+            <a href="https://ymingl.com/assets/pdf/AlignSAEslides.pdf" target="_blank" class="button is-link is-medium">
+              <span class="icon"><i class="fas fa-download"></i></span>
+              <span>Download Full Slides (PDF)</span>
+            </a>
+          </p>
+          <p style="margin-top: 0.5rem; text-align: center; color: #666;">
+            <small><i class="fas fa-info-circle"></i> Click any slide to open PDF • Use arrows to navigate</small>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
 
 <!--BibTex citation -->
   <section class="section" id="BibTeX">
@@ -579,8 +726,7 @@
           <p>
             <a href="https://arxiv.org/abs/2512.02004" target="_blank">Paper</a> •
             <a href="https://github.com/yminglai/AlignSAE" target="_blank">Code</a> •
-            <a href="https://ymingl.com/assets/pdf/AlignSAEslides.pdf" target="_blank">Slides</a> •
-            <a href="https://clulab.org/" target="_blank">CLU Lab</a>
+            <a href="https://ymingl.com/assets/pdf/AlignSAEslides.pdf" target="_blank">Slides</a>
           </p>
           <p style="margin-top: 1.5rem; font-size: 0.9rem;">
             This page was built using the <a href="https://github.com/eliahuhorwitz/Academic-project-page-template" target="_blank">Academic Project Page Template</a>. 
