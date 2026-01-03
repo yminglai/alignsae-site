@@ -125,14 +125,56 @@ $(document).ready(function() {
     var options = {
 		slidesToScroll: 1,
 		slidesToShow: 1,
-		loop: true,
-		infinite: true,
-		autoplay: true,
+        loop: false,
+        infinite: false,
+        autoplay: false,
 		autoplaySpeed: 5000,
     }
 
-	// Initialize all div with carousel class
-    var carousels = bulmaCarousel.attach('.carousel', options);
+    // Initialize the slide show carousel with strict options (target only our carousel)
+    var carousels = bulmaCarousel.attach('#contributions-carousel', options);
+
+    // Defensive: ensure autoplay is stopped and index reset after init (works around race conditions)
+    function stopCarouselAutoplay(list) {
+        if (!list) return;
+        try {
+            if (Array.isArray(list)) {
+                list.forEach(function(c) {
+                    try { if (c._autoplay && typeof c._autoplay.stop === 'function') c._autoplay.stop(); } catch(e){}
+                    try { if (c.pause && typeof c.pause === 'function') c.pause(); } catch(e){}
+                    try { if (c.moveTo && typeof c.moveTo === 'function') c.moveTo(0); } catch(e){}
+                    try { if (c.state) c.state.index = 0; } catch(e){}
+                });
+            } else {
+                try { if (list._autoplay && typeof list._autoplay.stop === 'function') list._autoplay.stop(); } catch(e){}
+            }
+        } catch(e) {}
+    }
+
+    // Try to stop autoplay immediately and a short time later to be robust
+    stopCarouselAutoplay(carousels);
+    setTimeout(function() { stopCarouselAutoplay(carousels); }, 300);
+    setTimeout(function() { stopCarouselAutoplay(carousels); }, 1500);
+    // Aggressive fallback: force the carousel back to slide 0 several times to avoid race conditions
+    (function ensureFirstSlide() {
+        var attempts = 0;
+        var maxAttempts = 8;
+        var interval = setInterval(function() {
+            attempts++;
+            try {
+                if (Array.isArray(carousels)) {
+                    carousels.forEach(function(c) {
+                        try { if (typeof c.moveTo === 'function') c.moveTo(0); } catch(e){}
+                        try { if (c.state) c.state.index = 0; } catch(e){}
+                    });
+                } else if (carousels) {
+                    try { if (typeof carousels.moveTo === 'function') carousels.moveTo(0); } catch(e){}
+                    try { if (carousels.state) carousels.state.index = 0; } catch(e){}
+                }
+            } catch(e) {}
+            if (attempts >= maxAttempts) clearInterval(interval);
+        }, 250);
+    })();
 	
     bulmaSlider.attach();
     
