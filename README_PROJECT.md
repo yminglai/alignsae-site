@@ -73,11 +73,11 @@ If you use AlignSAE in your research, please cite:
 ## 👥 Authors
 
 - **Minglai Yang** - University of Arizona ([website](https://ymingl.com))
-- **Xinyu Guo** - University of Arizona
+- **Xinyu Guo** - University of Arizona ([website](https://xinnyuguo.github.io/))
 - **Jinhe Bi** - Ludwig Maximilian University of Munich
 - **Steven Bethard** - University of Arizona ([website](https://bethard.faculty.arizona.edu/))
 - **Mihai Surdeanu** - University of Arizona ([website](http://surdeanu.cs.arizona.edu/mihai/))
-- **Liangming Pan** - Peking University ([website](https://liangmingpan.com/))
+- **Liangming Pan** - Peking University ([website](https://liangmingpan.bio/))
 
 *Corresponding authors
 
