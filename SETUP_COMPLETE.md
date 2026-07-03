@@ -154,14 +154,12 @@ mogrify -resize 1920x1920\> -quality 85 plots/*.png
 ## 🎓 Citation
 
 ```bibtex
-@misc{yang2025alignsaeconceptalignedsparseautoencoders,
-  title={AlignSAE: Concept-Aligned Sparse Autoencoders}, 
-  author={Minglai Yang and Xinyu Guo and Jinhe Bi and Steven Bethard and Mihai Surdeanu and Liangming Pan},
-  year={2025},
-  eprint={2512.02004},
-  archivePrefix={arXiv},
-  primaryClass={cs.LG},
-  url={https://arxiv.org/abs/2512.02004}
+@article{yang2026alignsae,
+  title={AlignSAE: Concept-Aligned Sparse Autoencoders},
+  author={Minglai Yang and Xinyu Guo and Zhengliang Shi and Jinhe Bi and Steven Bethard and Mihai Surdeanu and Liangming Pan},
+  journal={Transactions on Machine Learning Research},
+  year={2026},
+  url={https://openreview.net/forum?id=I9UjKxW4nq}
 }
 ```
 

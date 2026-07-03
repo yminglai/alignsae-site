@@ -1,6 +1,6 @@
 # AlignSAE: Concept-Aligned Sparse Autoencoders
 
-Official project page for the paper "AlignSAE: Concept-Aligned Sparse Autoencoders" by Minglai Yang, Xinyu Guo, Jinhe Bi, Steven Bethard, Mihai Surdeanu, and Liangming Pan.
+Official project page for the paper "AlignSAE: Concept-Aligned Sparse Autoencoders" (TMLR 2026) by Minglai Yang, Xinyu Guo, Zhengliang Shi, Jinhe Bi, Steven Bethard, Mihai Surdeanu, and Liangming Pan.
 
 ## 🌐 Live Website
 
@@ -59,14 +59,12 @@ alignsae-site/
 If you use AlignSAE in your research, please cite:
 
 ```bibtex
-@misc{yang2025alignsaeconceptalignedsparseautoencoders,
-  title={AlignSAE: Concept-Aligned Sparse Autoencoders}, 
-  author={Minglai Yang and Xinyu Guo and Jinhe Bi and Steven Bethard and Mihai Surdeanu and Liangming Pan},
-  year={2025},
-  eprint={2512.02004},
-  archivePrefix={arXiv},
-  primaryClass={cs.LG},
-  url={https://arxiv.org/abs/2512.02004}
+@article{yang2026alignsae,
+  title={AlignSAE: Concept-Aligned Sparse Autoencoders},
+  author={Minglai Yang and Xinyu Guo and Zhengliang Shi and Jinhe Bi and Steven Bethard and Mihai Surdeanu and Liangming Pan},
+  journal={Transactions on Machine Learning Research},
+  year={2026},
+  url={https://openreview.net/forum?id=I9UjKxW4nq}
 }
 ```
 
@@ -74,6 +72,7 @@ If you use AlignSAE in your research, please cite:
 
 - **Minglai Yang** - University of Arizona ([website](https://ymingl.com))
 - **Xinyu Guo** - University of Arizona ([website](https://xinnyuguo.github.io/))
+- **Zhengliang Shi** - Shandong University ([website](https://shizhl.github.io/))
 - **Jinhe Bi** - Ludwig Maximilian University of Munich
 - **Steven Bethard** - University of Arizona ([website](https://bethard.faculty.arizona.edu/))
 - **Mihai Surdeanu** - University of Arizona ([website](http://surdeanu.cs.arizona.edu/mihai/))
