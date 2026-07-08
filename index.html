@@ -1,621 +1,727 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  
-  <!-- Primary Meta Tags -->
-  <meta name="title" content="AlignSAE: Concept-Aligned Sparse Autoencoders - Yang et al.">
-  <meta name="description" content="Large Language Models (LLMs) encode factual knowledge within hidden parametric spaces that are difficult to inspect or control. While Sparse Autoencoders (SAEs) can decompose hidden activations into more fine-grained, interpretable features, they often struggle to reliably align these features with human-defined concepts, resulting in entangled and distributed feature representations. To address this, we introduce AlignSAE, a method that aligns SAE features with a predefined ontology through a 'pre-train, then post-train' curriculum. After an initial unsupervised training phase, we apply supervised post-training to bind specific concepts to dedicated latent slots while preserving the remaining capacity for general reconstruction. This separation creates an interpretable interface where specific concepts can be inspected and controlled without interference from unrelated features. Empirical results demonstrate that AlignSAE enables precise causal interventions, such as reliable 'concept swaps', by targeting single, semantically aligned slots, and further supports multi-hop reasoning and a mechanistic probe of grokking-like generalization dynamics.">
-  <meta name="keywords" content="sparse autoencoders, mechanistic interpretability, concept alignment, feature steering, LLM interpretability, SAE, concept binding, neural networks">
-  <meta name="author" content="Minglai Yang, Xinyu Guo, Zhengliang Shi, Jinhe Bi, Steven Bethard, Mihai Surdeanu, Liangming Pan">
-  <meta name="robots" content="index, follow">
-  <meta name="language" content="English">
-  
-  <!-- Open Graph / Facebook -->
-  <meta property="og:type" content="article">
-  <meta property="og:site_name" content="University of Arizona & Peking University">
-  <meta property="og:title" content="AlignSAE: Concept-Aligned Sparse Autoencoders">
-  <meta property="og:description" content="AlignSAE aligns SAE features with predefined ontologies through supervised post-training, enabling precise causal interventions and interpretable control over LLM representations.">
-  <meta property="og:url" content="https://ymingl.com/alignsae-site">
-  <meta property="og:image" content="plots/logo.png">
-  <meta property="og:image:width" content="1200">
-  <meta property="og:image:height" content="630">
-  <meta property="og:image:alt" content="AlignSAE - Concept-Aligned Sparse Autoencoders">
-  <meta property="article:published_time" content="2026-08-01T00:00:00.000Z">
-  <meta property="article:author" content="Minglai Yang">
-  <meta property="article:section" content="Research">
-  <meta property="article:tag" content="Mechanistic Interpretability">
-  <meta property="article:tag" content="Sparse Autoencoders">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AlignSAE: Concept-Aligned Sparse Autoencoders | Yang et al. 2026</title>
 
-  <!-- Twitter -->
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:site" content="@yminglai">
-  <meta name="twitter:creator" content="@yminglai">
-  <meta name="twitter:title" content="AlignSAE: Concept-Aligned Sparse Autoencoders">
-  <meta name="twitter:description" content="AlignSAE aligns SAE features with predefined ontologies through supervised post-training, enabling precise causal interventions and interpretable control over LLM representations.">
-  <meta name="twitter:image" content="plots/logo.png">
-  <meta name="twitter:image:alt" content="AlignSAE - Concept-Aligned Sparse Autoencoders">
+<meta name="description" content="AlignSAE binds each concept in a predefined ontology to a dedicated Sparse Autoencoder latent slot through a 'pre-train, then post-train' curriculum, turning a frozen LLM's entangled features into an interface you can find, verify, and causally steer. TMLR 2026.">
+<meta name="author" content="Minglai Yang, Xinyu Guo, Zhengliang Shi, Jinhe Bi, Steven Bethard, Mihai Surdeanu, Liangming Pan">
+<meta name="keywords" content="sparse autoencoders, mechanistic interpretability, concept alignment, feature steering, LLM interpretability, concept binding">
 
-  <!-- Academic/Research Specific -->
-  <meta name="citation_title" content="AlignSAE: Concept-Aligned Sparse Autoencoders">
-  <meta name="citation_author" content="Yang, Minglai">
-  <meta name="citation_author" content="Guo, Xinyu">
-  <meta name="citation_author" content="Shi, Zhengliang">
-  <meta name="citation_author" content="Bi, Jinhe">
-  <meta name="citation_author" content="Bethard, Steven">
-  <meta name="citation_author" content="Surdeanu, Mihai">
-  <meta name="citation_author" content="Pan, Liangming">
-  <meta name="citation_publication_date" content="2026">
-  <meta name="citation_journal_title" content="Transactions on Machine Learning Research">
-  <meta name="citation_pdf_url" content="https://arxiv.org/pdf/2512.02004.pdf">
-  
-  <!-- Additional SEO -->
-  <meta name="theme-color" content="#4f46e5">
-  <meta name="msapplication-TileColor" content="#4f46e5">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  
-  <!-- Preconnect for performance -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="preconnect" href="https://ajax.googleapis.com">
-  <link rel="preconnect" href="https://documentcloud.adobe.com">
-  <link rel="preconnect" href="https://cdn.jsdelivr.net">
+<!-- Open Graph -->
+<meta property="og:type" content="article">
+<meta property="og:title" content="AlignSAE: Concept-Aligned Sparse Autoencoders">
+<meta property="og:description" content="A 'pre-train, then post-train' curriculum that binds each ontology concept to its own SAE latent slot — turning entangled LLM features into an interface you can find, verify, and causally steer.">
+<meta property="og:url" content="https://ymingl.com/alignsae-site/">
+<meta property="og:image" content="figures/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="450">
+<meta property="article:published_time" content="2026-08-01T00:00:00.000Z">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="AlignSAE: Concept-Aligned Sparse Autoencoders">
+<meta name="twitter:description" content="Binding each ontology concept to a dedicated SAE latent slot — an interpretable, controllable interface over a frozen LLM. TMLR 2026.">
+<meta name="twitter:image" content="figures/og.png">
 
+<!-- Google Scholar -->
+<meta name="citation_title" content="AlignSAE: Concept-Aligned Sparse Autoencoders">
+<meta name="citation_author" content="Yang, Minglai">
+<meta name="citation_author" content="Guo, Xinyu">
+<meta name="citation_author" content="Shi, Zhengliang">
+<meta name="citation_author" content="Bi, Jinhe">
+<meta name="citation_author" content="Bethard, Steven">
+<meta name="citation_author" content="Surdeanu, Mihai">
+<meta name="citation_author" content="Pan, Liangming">
+<meta name="citation_publication_date" content="2026">
+<meta name="citation_journal_title" content="Transactions on Machine Learning Research">
+<meta name="citation_pdf_url" content="https://arxiv.org/pdf/2512.02004.pdf">
 
-  <title>AlignSAE: Concept-Aligned Sparse Autoencoders | Yang et al. 2026</title>
-  
-  <!-- Favicon and App Icons -->
-  <link rel="icon" type="image/png" href="plots/logo.png">
-  <link rel="apple-touch-icon" href="plots/logo.png">
-  
-  <!-- Critical CSS - Load synchronously -->
-  <link rel="stylesheet" href="static/css/bulma.min.css">
-  <link rel="stylesheet" href="static/css/index.css">
-  
-  <!-- Non-critical CSS - Load asynchronously -->
-  <link rel="preload" href="static/css/bulma-carousel.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-  <link rel="preload" href="static/css/bulma-slider.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-  <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-  <link rel="preload" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-  
-  <!-- Fallback for browsers that don't support preload -->
-  <noscript>
-    <link rel="stylesheet" href="static/css/bulma-carousel.min.css">
-    <link rel="stylesheet" href="static/css/bulma-slider.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
-  </noscript>
-  
-  <!-- Fonts - Optimized loading -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  
-  <!-- Defer non-critical JavaScript -->
-  <script defer src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-  <script defer src="https://documentcloud.adobe.com/view-sdk/main.js"></script>
-  <script defer src="static/js/fontawesome.all.min.js"></script>
-  <script defer src="static/js/bulma-carousel.min.js"></script>
-  <script defer src="static/js/bulma-slider.min.js"></script>
-  <script defer src="static/js/index.js"></script>
-  
-  <!-- MathJax for LaTeX rendering -->
-  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-  <script>
-    MathJax = {
-      tex: {
-        inlineMath: [['$', '$'], ['\\(', '\\)']],
-        displayMath: [['$$', '$$'], ['\\[', '\\]']]
-      },
-      svg: {
-        fontCache: 'global'
-      }
-    };
-  </script>
-  
-  <!-- Structured Data for Academic Papers -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "ScholarlyArticle",
-    "headline": "AlignSAE: Concept-Aligned Sparse Autoencoders",
-    "description": "Large Language Models (LLMs) encode factual knowledge within hidden parametric spaces that are difficult to inspect or control. While Sparse Autoencoders (SAEs) can decompose hidden activations into more fine-grained, interpretable features, they often struggle to reliably align these features with human-defined concepts, resulting in entangled and distributed feature representations. To address this, we introduce AlignSAE, a method that aligns SAE features with a predefined ontology through a 'pre-train, then post-train' curriculum. After an initial unsupervised training phase, we apply supervised post-training to bind specific concepts to dedicated latent slots while preserving the remaining capacity for general reconstruction. This separation creates an interpretable interface where specific concepts can be inspected and controlled without interference from unrelated features. Empirical results demonstrate that AlignSAE enables precise causal interventions, such as reliable 'concept swaps', by targeting single, semantically aligned slots, and further supports multi-hop reasoning and a mechanistic probe of grokking-like generalization dynamics.",
-    "author": [
-      {
-        "@type": "Person",
-        "name": "Minglai Yang",
-        "affiliation": {
-          "@type": "Organization",
-          "name": "University of Arizona"
-        }
-      },
-      {
-        "@type": "Person",
-        "name": "Xinyu Guo",
-        "affiliation": {
-          "@type": "Organization",
-          "name": "University of Arizona"
-        }
-      },
-      {
-        "@type": "Person",
-        "name": "Zhengliang Shi",
-        "affiliation": {
-          "@type": "Organization",
-          "name": "Carnegie Mellon University"
-        }
-      },
-      {
-        "@type": "Person",
-        "name": "Jinhe Bi",
-        "affiliation": {
-          "@type": "Organization",
-          "name": "Ludwig Maximilian University of Munich"
-        }
-      },
-      {
-        "@type": "Person",
-        "name": "Steven Bethard",
-        "affiliation": {
-          "@type": "Organization",
-          "name": "University of Arizona"
-        }
-      },
-      {
-        "@type": "Person",
-        "name": "Mihai Surdeanu",
-        "affiliation": {
-          "@type": "Organization",
-          "name": "University of Arizona"
-        }
-      },
-      {
-        "@type": "Person",
-        "name": "Liangming Pan",
-        "affiliation": {
-          "@type": "Organization",
-          "name": "Peking University"
-        }
-      }
-    ],
-    "datePublished": "2026-08-01",
-    "publisher": {
-      "@type": "Organization",
-      "name": "Transactions on Machine Learning Research"
-    },
-    "url": "https://arxiv.org/abs/2512.02004",
-    "image": "plots/logo.png",
-    "keywords": ["sparse autoencoders", "mechanistic interpretability", "concept alignment", "feature steering", "LLM interpretability"],
-    "abstract": "Large Language Models (LLMs) encode factual knowledge within hidden parametric spaces that are difficult to inspect or control. While Sparse Autoencoders (SAEs) can decompose hidden activations into more fine-grained, interpretable features, they often struggle to reliably align these features with human-defined concepts, resulting in entangled and distributed feature representations. To address this, we introduce AlignSAE, a method that aligns SAE features with a predefined ontology through a 'pre-train, then post-train' curriculum.",
-    "citation": "@article{yang2026alignsae,title={AlignSAE: Concept-Aligned Sparse Autoencoders},author={Minglai Yang and Xinyu Guo and Zhengliang Shi and Jinhe Bi and Steven Bethard and Mihai Surdeanu and Liangming Pan},journal={Transactions on Machine Learning Research},issn={2835-8856},year={2026},url={https://openreview.net/forum?id=I9UjKxW4nq}}",
-    "isAccessibleForFree": true,
-    "license": "https://creativecommons.org/licenses/by/4.0/",
-    "mainEntity": {
-      "@type": "WebPage",
-      "@id": "https://ymingl.com/alignsae-site"
-    },
-    "about": [
-      {
-        "@type": "Thing",
-        "name": "Mechanistic Interpretability"
-      },
-      {
-        "@type": "Thing", 
-        "name": "Sparse Autoencoders"
-      }
-    ]
-  }
-  </script>
-  
-  <!-- Website/Organization Structured Data -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "Organization",
-    "name": "University of Arizona NLP Lab",
-    "url": "https://www.arizona.edu",
-    "logo": "plots/logo.png",
-    "sameAs": [
-      "https://github.com/yminglai/AlignSAE"
-    ]
-  }
-  </script>
+<link rel="icon" type="image/png" href="plots/favicon.png">
+<link rel="apple-touch-icon" href="plots/favicon.png">
+
+<!-- Set theme before paint to avoid flash -->
+<script>
+(function () {
+  try {
+    var t = localStorage.getItem('alignsae-theme');
+    if (!t) t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    document.documentElement.setAttribute('data-theme', t);
+  } catch (e) {}
+})();
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap" rel="stylesheet">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ScholarlyArticle",
+  "headline": "AlignSAE: Concept-Aligned Sparse Autoencoders",
+  "author": [
+    {"@type":"Person","name":"Minglai Yang","affiliation":{"@type":"Organization","name":"University of Arizona"}},
+    {"@type":"Person","name":"Xinyu Guo","affiliation":{"@type":"Organization","name":"University of Arizona"}},
+    {"@type":"Person","name":"Zhengliang Shi","affiliation":{"@type":"Organization","name":"Carnegie Mellon University"}},
+    {"@type":"Person","name":"Jinhe Bi","affiliation":{"@type":"Organization","name":"Ludwig Maximilian University of Munich"}},
+    {"@type":"Person","name":"Steven Bethard","affiliation":{"@type":"Organization","name":"University of Arizona"}},
+    {"@type":"Person","name":"Mihai Surdeanu","affiliation":{"@type":"Organization","name":"University of Arizona"}},
+    {"@type":"Person","name":"Liangming Pan","affiliation":{"@type":"Organization","name":"Peking University"}}
+  ],
+  "datePublished": "2026-08-01",
+  "publisher": {"@type":"Organization","name":"Transactions on Machine Learning Research"},
+  "url": "https://ymingl.com/alignsae-site/",
+  "sameAs": ["https://arxiv.org/abs/2512.02004","https://openreview.net/forum?id=I9UjKxW4nq"],
+  "keywords": ["sparse autoencoders","mechanistic interpretability","concept alignment","feature steering"],
+  "citation": "@article{yang2026alignsae, title={AlignSAE: Concept-Aligned Sparse Autoencoders}, author={Minglai Yang and Xinyu Guo and Zhengliang Shi and Jinhe Bi and Steven Bethard and Mihai Surdeanu and Liangming Pan}, journal={Transactions on Machine Learning Research}, issn={2835-8856}, year={2026}, url={https://openreview.net/forum?id=I9UjKxW4nq}}"
+}
+</script>
+
+<style>
+:root {
+  --bg:#FBFAF6; --surface:#FFFFFF; --ink:#1B1A17; --muted:#6E6A61;
+  --hairline:#E7E3D8; --warm:#C0553B; --cool:#35618E;
+  --warm-soft:rgba(192,85,59,.10); --cool-soft:rgba(53,97,142,.10);
+  --measure:640px; --gutter:340px;
+  --serif:"Source Serif 4",Georgia,"Times New Roman",serif;
+  --display:"Fraunces",Georgia,serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+html[data-theme="dark"] {
+  --bg:#17150F; --surface:#211E17; --ink:#ECE8DE; --muted:#9B968A;
+  --hairline:#322E24; --warm:#DA6B4F; --cool:#7AA6D0;
+  --warm-soft:rgba(218,107,79,.14); --cool-soft:rgba(122,166,208,.16);
+}
+* { box-sizing:border-box; }
+html { scroll-behavior:smooth; overflow-x:hidden; }
+body { overflow-x:hidden; }
+/* keep grid/flex children from forcing the document wider than the viewport */
+.matrix-stage > *, .stats > *, .losses > *, .fig-pair > *, .swapcard .row > *, .tldr > * { min-width:0; }
+img, pre, table, figure { max-width:100%; }
+@media (prefers-reduced-motion:reduce){ html{scroll-behavior:auto;} }
+body {
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:var(--serif); font-size:19px; line-height:1.65;
+  -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+  font-optical-sizing:auto;
+}
+::selection { background:var(--warm-soft); }
+a { color:var(--cool); text-decoration:none; }
+a:hover { color:var(--warm); text-decoration:underline; text-decoration-color:var(--warm); text-underline-offset:3px; }
+:focus-visible { outline:2px solid var(--cool); outline-offset:3px; border-radius:2px; }
+h1,h2,h3 { font-family:var(--display); font-weight:600; line-height:1.12; letter-spacing:-.01em; }
+.mono { font-family:var(--mono); }
+
+/* ---------- Top bar ---------- */
+.topbar {
+  position:sticky; top:0; z-index:50; background:color-mix(in srgb,var(--bg) 88%,transparent);
+  backdrop-filter:saturate(120%) blur(8px); -webkit-backdrop-filter:saturate(120%) blur(8px);
+  border-bottom:1px solid var(--hairline);
+}
+.topbar-in { max-width:1080px; margin:0 auto; padding:.7rem 1.5rem; display:flex; align-items:center; gap:1rem; }
+.brand { display:flex; align-items:center; gap:.55rem; font-family:var(--mono); font-weight:600; font-size:.95rem; color:var(--ink); letter-spacing:.02em; }
+.brand:hover { text-decoration:none; }
+.brand svg { display:block; }
+.nav { margin-left:auto; display:flex; align-items:center; gap:1.15rem; font-family:var(--mono); font-size:.8rem; }
+.nav a { color:var(--muted); letter-spacing:.03em; }
+.nav a:hover { color:var(--warm); text-decoration:none; }
+.toggle {
+  width:34px; height:34px; border:1px solid var(--hairline); border-radius:50%;
+  background:var(--surface); color:var(--ink); cursor:pointer; display:grid; place-items:center; padding:0;
+}
+.toggle:hover { border-color:var(--warm); color:var(--warm); }
+.nav-links { display:flex; gap:1.15rem; }
+@media (max-width:720px){ .nav-links{display:none;} }
+
+/* ---------- Layout ---------- */
+main { max-width:1080px; margin:0 auto; padding:0 1.5rem; }
+section { padding:3.2rem 0; border-top:1px solid var(--hairline); }
+section:first-of-type { border-top:none; }
+.measure > * { max-width:var(--measure); }
+.eyebrow { font-family:var(--mono); font-size:.72rem; letter-spacing:.18em; text-transform:uppercase; color:var(--warm); margin:0 0 .9rem; }
+h2.sec { font-size:2rem; margin:.1rem 0 1.4rem; }
+.sec-num { font-family:var(--mono); color:var(--warm); font-size:1rem; margin-right:.6rem; }
+p { margin:0 0 1.1rem; }
+
+/* ---------- Frontispiece ---------- */
+.hero { padding-top:3.6rem; padding-bottom:2.4rem; }
+.venue { font-family:var(--mono); font-size:.72rem; letter-spacing:.16em; text-transform:uppercase; color:var(--muted); }
+.venue b { color:var(--warm); font-weight:600; }
+.hero h1 { font-size:clamp(2.7rem,7vw,4.6rem); margin:.7rem 0 .2rem; font-weight:600; }
+.hero .subtitle { font-family:var(--display); font-weight:400; font-style:italic; font-size:clamp(1.15rem,2.6vw,1.5rem); color:var(--muted); max-width:32ch; margin:0 0 1.6rem; line-height:1.25; }
+.authors { font-size:1.02rem; line-height:1.9; max-width:760px; }
+.authors a { color:var(--ink); text-decoration:underline; text-decoration-color:var(--hairline); text-underline-offset:3px; }
+.authors a:hover { color:var(--warm); text-decoration-color:var(--warm); }
+.authors sup { color:var(--warm); font-family:var(--mono); font-size:.7em; }
+.affil { color:var(--muted); font-size:.92rem; margin-top:.5rem; }
+.affil .corr { font-family:var(--mono); font-size:.82em; }
+.reslinks { display:flex; flex-wrap:wrap; gap:.7rem; margin-top:1.7rem; }
+.btn {
+  display:inline-flex; align-items:center; gap:.5rem; padding:.5rem .95rem;
+  border:1px solid var(--hairline); border-radius:999px; background:var(--surface);
+  font-family:var(--mono); font-size:.82rem; color:var(--ink); letter-spacing:.02em;
+}
+.btn:hover { border-color:var(--warm); color:var(--warm); text-decoration:none; }
+.btn.primary { border-color:var(--warm); color:var(--warm); }
+.btn svg { width:15px; height:15px; }
+
+/* ---------- TL;DR ---------- */
+.tldr { display:flex; gap:1.2rem; align-items:flex-start; }
+.tldr .eyebrow { flex:0 0 auto; margin:.35rem 0 0; }
+.tldr p { font-family:var(--display); font-weight:400; font-size:1.4rem; line-height:1.4; margin:0; max-width:26ch; }
+.tldr .lead { max-width:640px; font-size:1.06rem; color:var(--ink); }
+@media (max-width:720px){ .tldr{flex-direction:column;gap:.5rem;} }
+
+/* ---------- Abstract ---------- */
+.abstract p { border-left:3px solid var(--warm); padding-left:1.25rem; font-size:1.06rem; }
+
+/* ---------- Essay + sidenotes ---------- */
+.essay { position:relative; }
+.essay > p, .essay > h2, .essay > ul { max-width:var(--measure); }
+.sidenote {
+  float:right; clear:right; width:300px; margin:.2rem 0 1.3rem 2rem;
+  font-size:.82rem; line-height:1.5; color:var(--muted);
+  border-left:2px solid var(--hairline); padding-left:.9rem;
+}
+.sidenote .sn-term { font-family:var(--mono); color:var(--cool); font-size:.92em; display:block; margin-bottom:.15rem; letter-spacing:.02em; }
+.sn-ref { font-family:var(--mono); color:var(--warm); font-size:.72em; vertical-align:super; padding:0 .1em; }
+@media (max-width:1000px){
+  .sidenote { float:none; width:auto; margin:1rem 0 1.4rem; }
+}
+
+/* ---------- Binding matrix (signature) ---------- */
+.matrix-wrap { max-width:none; }
+.matrix-stage { display:grid; grid-template-columns:minmax(0,1fr) 300px; gap:2.5rem; align-items:center; margin-top:.5rem; }
+@media (max-width:860px){ .matrix-stage{grid-template-columns:1fr; gap:1.6rem;} }
+.mx { max-width:520px; margin:0 auto; width:100%; }
+.mx-grid-outer { display:grid; grid-template-columns:auto 1fr; gap:.5rem; }
+.mx-rowlabels { display:grid; align-content:stretch; font-family:var(--mono); font-size:.62rem; color:var(--muted); text-align:right; }
+.mx-rowlabels span { display:flex; align-items:center; justify-content:flex-end; }
+.mx-grid { display:grid; grid-template-columns:repeat(6,1fr); gap:4px; aspect-ratio:1/1; }
+.cell {
+  border-radius:3px; background:var(--cool); position:relative; transition:background-color .18s ease, opacity .18s ease;
+}
+html[data-theme] .cell.diag { }
+.cell:hover, .cell:focus-visible { box-shadow:0 0 0 2px var(--surface),0 0 0 3px var(--ink); z-index:2; }
+.mx-collabels { display:grid; grid-template-columns:repeat(6,1fr); gap:4px; margin-top:.4rem; font-family:var(--mono); font-size:.6rem; color:var(--muted); text-align:center; }
+.mx-axis { font-family:var(--mono); font-size:.62rem; color:var(--muted); letter-spacing:.08em; text-transform:uppercase; }
+.mx-axis.rows { writing-mode:vertical-rl; transform:rotate(180deg); }
+@media (prefers-reduced-motion:reduce){ .cell{transition:none;} }
+
+.mx-panel { }
+.slider-row { margin:0 0 1.4rem; }
+.slider-labels { display:flex; justify-content:space-between; font-family:var(--mono); font-size:.72rem; color:var(--muted); margin-bottom:.5rem; }
+.slider-labels b { color:var(--warm); font-weight:600; }
+input[type=range]{
+  -webkit-appearance:none; appearance:none; width:100%; height:3px; border-radius:2px;
+  background:linear-gradient(to right,var(--cool),var(--warm)); outline-offset:6px; cursor:pointer;
+}
+input[type=range]::-webkit-slider-thumb{ -webkit-appearance:none; width:22px; height:22px; border-radius:50%; background:var(--surface); border:2px solid var(--warm); cursor:pointer; box-shadow:0 1px 3px rgba(0,0,0,.2); }
+input[type=range]::-moz-range-thumb{ width:20px; height:20px; border-radius:50%; background:var(--surface); border:2px solid var(--warm); cursor:pointer; }
+.readout { font-family:var(--mono); font-size:.8rem; color:var(--ink); border-top:1px solid var(--hairline); padding-top:1rem; }
+.readout .r-line { display:flex; justify-content:space-between; gap:1rem; padding:.32rem 0; }
+.readout .r-val { color:var(--warm); font-weight:600; font-variant-numeric:tabular-nums; }
+.readout .r-lab { color:var(--muted); }
+.mx-caption { font-family:var(--mono); font-size:.72rem; color:var(--muted); line-height:1.55; margin-top:1.1rem; }
+.mx-tip { min-height:1.2rem; font-family:var(--mono); font-size:.74rem; color:var(--cool); margin-top:.6rem; }
+
+/* ---------- Method ---------- */
+.steps { counter-reset:step; max-width:var(--measure); }
+.step { display:grid; grid-template-columns:auto 1fr; gap:1rem; padding:1.1rem 0; border-top:1px solid var(--hairline); }
+.step:first-child { border-top:none; }
+.step .n { counter-increment:step; font-family:var(--mono); color:var(--warm); font-size:.85rem; padding-top:.35rem; }
+.step .n::before { content:counter(step,decimal-leading-zero); }
+.step h3 { font-size:1.15rem; margin:.15rem 0 .35rem; font-weight:600; }
+.step p { font-size:.98rem; margin:0; color:var(--ink); }
+.step .formula { font-family:var(--mono); font-size:.82rem; color:var(--cool); background:var(--cool-soft); padding:.1rem .4rem; border-radius:4px; }
+.losses { display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; margin-top:1.8rem; }
+@media (max-width:760px){ .losses{grid-template-columns:1fr;} }
+.loss { border:1px solid var(--hairline); border-radius:8px; padding:1.1rem 1.15rem; background:var(--surface); }
+.loss .tag { font-family:var(--mono); font-size:.72rem; color:var(--warm); letter-spacing:.02em; }
+.loss h4 { font-family:var(--display); font-size:1.05rem; margin:.4rem 0 .45rem; font-weight:600; }
+.loss p { font-size:.9rem; color:var(--muted); margin:0; line-height:1.55; }
+
+/* ---------- Figures ---------- */
+figure { margin:1.8rem 0 0; }
+figure img { width:100%; height:auto; display:block; border:1px solid var(--hairline); border-radius:8px; background:#ffffff; padding:12px; }
+html[data-theme="dark"] figure img { background:#f7f5ef; border-color:#3a352a; } /* paper figures are light; keep a light mat so they read */
+figcaption { font-family:var(--mono); font-size:.74rem; color:var(--muted); line-height:1.55; margin-top:.7rem; max-width:var(--measure); }
+figcaption b { color:var(--ink); font-weight:600; }
+.fig-pair { display:grid; grid-template-columns:1fr 1fr; gap:1.2rem; }
+@media (max-width:760px){ .fig-pair{grid-template-columns:1fr;} }
+
+/* ---------- Stats ---------- */
+.stats { display:grid; grid-template-columns:repeat(3,1fr); gap:1.6rem 1.4rem; margin:0 0 2.2rem; max-width:none; }
+@media (max-width:760px){ .stats{grid-template-columns:1fr 1fr;} }
+@media (max-width:440px){ .stats{grid-template-columns:1fr;} }
+.stat .v { font-family:var(--display); font-size:2.7rem; font-weight:600; color:var(--warm); line-height:1; letter-spacing:-.02em; }
+.stat .l { font-size:.95rem; margin-top:.5rem; color:var(--ink); line-height:1.3; }
+.stat .n { font-family:var(--mono); font-size:.72rem; color:var(--muted); margin-top:.35rem; line-height:1.45; }
+
+/* ---------- Table ---------- */
+.tbl-wrap { max-width:var(--measure); overflow-x:auto; }
+table.book { width:100%; border-collapse:collapse; font-size:.95rem; }
+table.book caption { text-align:left; font-family:var(--mono); font-size:.74rem; color:var(--muted); padding-bottom:.7rem; }
+table.book th, table.book td { padding:.55rem .6rem; text-align:right; font-variant-numeric:tabular-nums; }
+table.book th:first-child, table.book td:first-child { text-align:left; font-variant-numeric:normal; }
+table.book thead th { border-bottom:1.5px solid var(--ink); font-family:var(--mono); font-weight:500; font-size:.78rem; color:var(--muted); letter-spacing:.02em; }
+table.book tbody tr { border-bottom:1px solid var(--hairline); }
+table.book tbody tr:last-child { border-bottom:1.5px solid var(--ink); }
+table.book td.strong { color:var(--ink); font-weight:600; }
+.chip { display:inline-block; font-family:var(--mono); font-size:.74rem; color:var(--warm); background:var(--warm-soft); border-radius:4px; padding:.05rem .4rem; }
+
+/* ---------- Swap card + concept chips ---------- */
+.swapcard { max-width:var(--measure); border:1px solid var(--hairline); border-radius:10px; overflow:hidden; margin-top:2rem; }
+.swapcard .row { display:grid; grid-template-columns:120px 1fr; gap:1rem; padding:.85rem 1.1rem; border-top:1px solid var(--hairline); align-items:baseline; }
+.swapcard .row:first-child { border-top:none; background:var(--cool-soft); }
+.swapcard .k { font-family:var(--mono); font-size:.74rem; color:var(--muted); text-transform:uppercase; letter-spacing:.05em; }
+.swapcard .val { font-size:1rem; }
+.swapcard .flip { color:var(--warm); font-weight:600; }
+.swapcard .slot { font-family:var(--mono); color:var(--cool); }
+.concepts { display:flex; flex-wrap:wrap; gap:.55rem; margin-top:1.6rem; max-width:var(--measure); }
+.concepts .c { font-family:var(--mono); font-size:.8rem; color:var(--ink); border:1px solid var(--hairline); border-radius:6px; padding:.3rem .6rem; background:var(--surface); }
+.concepts .c::before { content:"◆ "; color:var(--warm); font-size:.7em; }
+
+/* ---------- BibTeX ---------- */
+.bibtex { max-width:var(--measure); }
+.bib-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:.7rem; }
+pre.bib { background:var(--surface); border:1px solid var(--hairline); border-radius:8px; padding:1.1rem 1.2rem; overflow-x:auto; font-family:var(--mono); font-size:.8rem; line-height:1.6; color:var(--ink); margin:0; }
+.copybtn { font-family:var(--mono); font-size:.75rem; color:var(--muted); background:none; border:1px solid var(--hairline); border-radius:6px; padding:.32rem .7rem; cursor:pointer; }
+.copybtn:hover { border-color:var(--warm); color:var(--warm); }
+.copybtn.done { color:var(--warm); border-color:var(--warm); }
+
+/* ---------- Footer ---------- */
+footer { border-top:1px solid var(--hairline); padding:2.4rem 0 3.4rem; margin-top:1rem; }
+footer .fin { max-width:1080px; margin:0 auto; padding:0 1.5rem; font-size:.9rem; color:var(--muted); }
+footer .flinks { font-family:var(--mono); font-size:.8rem; margin-bottom:.8rem; }
+footer .flinks a { color:var(--cool); }
+footer .tiny { font-size:.78rem; margin-top:1rem; }
+</style>
 </head>
+
 <body>
 
+<!-- ======= TOP BAR ======= -->
+<div class="topbar">
+  <div class="topbar-in">
+    <a class="brand" href="#top" aria-label="AlignSAE home">
+      <svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true">
+        <g fill="var(--cool)"><rect x="1" y="1" width="5" height="5" rx="1"/><rect x="15" y="1" width="5" height="5" rx="1"/><rect x="8" y="8" width="5" height="5" rx="1" opacity=".4"/><rect x="15" y="8" width="5" height="5" rx="1" opacity=".4"/><rect x="1" y="15" width="5" height="5" rx="1" opacity=".4"/></g>
+        <g fill="var(--warm)"><rect x="1" y="1" width="5" height="5" rx="1" opacity="0"/><rect x="8" y="1" width="5" height="5" rx="1" opacity=".25"/><rect x="8" y="8" width="5" height="5" rx="1"/><rect x="15" y="15" width="5" height="5" rx="1"/></g>
+      </svg>
+      AlignSAE
+    </a>
+    <nav class="nav">
+      <div class="nav-links">
+        <a href="#problem">Problem</a>
+        <a href="#binding">Binding</a>
+        <a href="#method">Method</a>
+        <a href="#results">Results</a>
+        <a href="#cite">Cite</a>
+      </div>
+      <a href="https://openreview.net/forum?id=I9UjKxW4nq" target="_blank" rel="noopener">Paper</a>
+      <a href="https://github.com/yminglai/AlignSAE" target="_blank" rel="noopener">Code</a>
+      <button class="toggle" id="themeToggle" aria-label="Toggle dark mode" aria-pressed="false" title="Toggle theme">
+        <svg id="themeIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+      </button>
+    </nav>
+  </div>
+</div>
 
-  <!-- Scroll to Top Button -->
-  <button class="scroll-to-top" onclick="scrollToTop()" title="Scroll to top" aria-label="Scroll to top">
-    <i class="fas fa-chevron-up"></i>
-  </button>
+<a id="top"></a>
+<main>
 
-  <main id="main-content">
-  <section class="hero">
-    <div class="hero-body">
-      <div class="container is-max-desktop">
-        <div class="columns is-centered">
-          <div class="column has-text-centered">
-            <div style="margin-bottom: 2rem;">
-              <img src="plots/logo.png" alt="AlignSAE Logo" style="max-width: 120px; height: auto;">
-            </div>
-            <h1 class="title is-1 publication-title">AlignSAE: Concept-Aligned Sparse Autoencoders</h1>
-            <div class="publication-authors">
-              <span class="author-block">
-                <a href="https://ymingl.com" target="_blank">Minglai Yang</a><sup>1*</sup>,</span>
-              <span class="author-block">
-                <a href="https://xinnyuguo.github.io/" target="_blank">Xinyu Guo</a><sup>1</sup>,</span>
-              <span class="author-block">
-                <a href="https://shizhl.github.io/" target="_blank">Zhengliang Shi</a><sup>2</sup>,</span>
-              <span class="author-block">
-                <a href="#" target="_blank">Jinhe Bi</a><sup>3</sup>,</span>
-              <span class="author-block">
-                <a href="https://bethard.faculty.arizona.edu/" target="_blank">Steven Bethard</a><sup>1</sup>,</span>
-              <span class="author-block">
-                <a href="http://surdeanu.cs.arizona.edu/mihai/" target="_blank">Mihai Surdeanu</a><sup>1*</sup>,</span>
-              <span class="author-block">
-                <a href="https://liangmingpan.bio/" target="_blank">Liangming Pan</a><sup>4*</sup></span>
-            </div>
+<!-- ======= FRONTISPIECE ======= -->
+<section class="hero" style="border:none;">
+  <div class="venue"><b>Transactions on Machine Learning Research</b> &middot; 2026</div>
+  <h1>AlignSAE</h1>
+  <p class="subtitle">Concept-Aligned Sparse Autoencoders</p>
 
-            <div class="publication-authors" style="margin-top: 1rem;">
-              <span class="author-block"><sup>1</sup>University of Arizona&nbsp;&nbsp;</span>
-              <span class="author-block"><sup>2</sup>Carnegie Mellon University&nbsp;&nbsp;</span>
-              <span class="author-block"><sup>3</sup>Ludwig Maximilian University of Munich&nbsp;&nbsp;</span>
-              <span class="author-block"><sup>4</sup>Peking University</span>
-              <br>
-              <span class="eql-cntrb" style="font-size: 1.1rem;"><sup>*</sup>Corresponding Authors</span>
-            </div>
+  <div class="authors">
+    <a href="https://ymingl.com" target="_blank" rel="noopener">Minglai Yang</a><sup>1&#42;</sup>,
+    <a href="https://xinnyuguo.github.io/" target="_blank" rel="noopener">Xinyu Guo</a><sup>1</sup>,
+    <a href="https://shizhl.github.io/" target="_blank" rel="noopener">Zhengliang Shi</a><sup>2</sup>,
+    Jinhe Bi<sup>3</sup>,
+    <a href="https://bethard.faculty.arizona.edu/" target="_blank" rel="noopener">Steven Bethard</a><sup>1</sup>,
+    <a href="http://surdeanu.cs.arizona.edu/mihai/" target="_blank" rel="noopener">Mihai Surdeanu</a><sup>1&#42;</sup>,
+    <a href="https://liangmingpan.bio/" target="_blank" rel="noopener">Liangming Pan</a><sup>4&#42;</sup>
+    <div class="affil">
+      <sup>1</sup>University of Arizona &nbsp; <sup>2</sup>Carnegie Mellon University &nbsp; <sup>3</sup>LMU Munich &nbsp; <sup>4</sup>Peking University
+      <br><span class="corr">&#42; Corresponding authors</span>
+    </div>
+  </div>
 
-            <div class="is-size-5" style="margin-top: 1.25rem;">
-              <span style="color: #5c4d9e; font-weight: 700;">Published in Transactions on Machine Learning Research (TMLR), 2026</span>
-            </div>
+  <div class="reslinks">
+    <a class="btn primary" href="https://openreview.net/forum?id=I9UjKxW4nq" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2h9l5 5v15H6z"/><path d="M14 2v6h6"/></svg> Paper (OpenReview)</a>
+    <a class="btn" href="https://arxiv.org/abs/2512.02004" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v16H4z"/><path d="M8 8l8 8M16 8l-8 8"/></svg> arXiv</a>
+    <a class="btn" href="https://github.com/yminglai/AlignSAE" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 1C5.9 1 1 5.9 1 12c0 4.9 3.2 9 7.6 10.4.6.1.8-.2.8-.5v-2c-3.1.7-3.8-1.3-3.8-1.3-.5-1.3-1.2-1.7-1.2-1.7-1-.7.1-.7.1-.7 1.1.1 1.7 1.1 1.7 1.1 1 1.7 2.6 1.2 3.2.9.1-.7.4-1.2.7-1.5-2.5-.3-5.1-1.2-5.1-5.5 0-1.2.4-2.2 1.1-3-.1-.3-.5-1.4.1-2.9 0 0 .9-.3 3 1.1a10 10 0 015.5 0c2.1-1.4 3-1.1 3-1.1.6 1.5.2 2.6.1 2.9.7.8 1.1 1.8 1.1 3 0 4.3-2.6 5.2-5.1 5.5.4.3.8 1 .8 2.1v3.1c0 .3.2.6.8.5C19.8 21 23 16.9 23 12c0-6.1-4.9-11-11-11z"/></svg> Code &amp; Data</a>
+    <a class="btn" href="https://ymingl.com/assets/pdf/AlignSAEslides.pdf" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="13" rx="1"/><path d="M8 21h8M12 17v4"/></svg> Slides</a>
+    <a class="btn" href="#cite">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 4v16M18 4v16M6 8h12M6 12h12M6 16h12"/></svg> BibTeX</a>
+  </div>
+</section>
 
-            <div class="column has-text-centered">
-              <div class="publication-links">
-                <span class="link-block">
-                  <a href="https://arxiv.org/pdf/2512.02004.pdf" target="_blank"
-                  class="external-link button is-normal is-rounded is-dark">
-                  <span class="icon">
-                    <i class="fas fa-file-pdf"></i>
-                  </span>
-                  <span>Paper</span>
-                </a>
-              </span>
+<!-- ======= TL;DR ======= -->
+<section class="tldr">
+  <p class="eyebrow">TL;DR</p>
+  <div>
+    <p>Give a Sparse Autoencoder a <em>post-training</em> stage, and each human concept binds to its own latent slot.</p>
+    <p class="lead" style="margin-top:1rem;color:var(--muted);">We borrow the LLM pre-train / post-train recipe for interpretability: after unsupervised SAE pre-training, a supervised post-training stage binds each ontology concept to a dedicated latent slot &mdash; converting a diagnostic tool into a reliable, controllable concept-level interface over a <em>frozen</em> model.</p>
+  </div>
+</section>
 
-              <span class="link-block">
-                <a href="https://ymingl.com/assets/pdf/AlignSAEslides.pdf" target="_blank"
-                class="external-link button is-normal is-rounded is-dark">
-                <span class="icon">
-                  <i class="fas fa-file-powerpoint"></i>
-                </span>
-                <span>Slides</span>
-              </a>
-            </span>
+<!-- ======= OVERVIEW FIGURE ======= -->
+<section style="border-top:1px solid var(--hairline);">
+  <figure style="margin-top:0;max-width:none;">
+    <img src="figures/main.png" alt="AlignSAE overview: a standard unsupervised SAE spreads each concept across many entangled features (left); AlignSAE adds a supervised binding loss that maps each concept to a dedicated feature, yielding a clean diagonal (right).">
+    <figcaption style="max-width:none;"><b>Overview.</b> Left: an unsupervised SAE trained post-hoc on frozen LLM activations optimizes only reconstruction and sparsity, so each concept is spread across many entangled features &mdash; making interventions unreliable. Right: AlignSAE adds a supervised binding loss that maps each concept in a predefined ontology to a <b>dedicated</b> feature, yielding clean, isolated activations that are easy to find, interpret, and control.</figcaption>
+  </figure>
+</section>
 
-            <span class="link-block">
-              <a href="https://github.com/yminglai/AlignSAE" target="_blank"
-              class="external-link button is-normal is-rounded is-dark">
-              <span class="icon">
-                <i class="fab fa-github"></i>
-              </span>
-              <span>Code</span>
-            </a>
-          </span>
+<!-- ======= ABSTRACT ======= -->
+<section class="abstract measure" id="abstract">
+  <p class="eyebrow">Abstract</p>
+  <p>Large Language Models encode factual knowledge in opaque parametric spaces, and while Sparse Autoencoders can decompose hidden activations into finer, more interpretable features, they have no explicit incentive to align those features with human-defined concepts &mdash; leaving representations entangled and distributed. <b>AlignSAE</b> addresses this with a &ldquo;pre-train, then post-train&rdquo; curriculum: after an unsupervised training phase, supervised post-training binds specific concepts from a predefined ontology to dedicated latent slots while preserving the remaining capacity for general reconstruction. This separation creates an interpretable interface where concepts can be inspected and controlled without interference from unrelated features. On GPT-2, across synthetic biographical QA (1-hop, 6 concepts) and compositional relational reasoning (2-hop, 20 concepts), AlignSAE enables precise causal interventions &mdash; reliable concept swaps at <b>&asymp;85%</b> success in 1-hop (0.847 at &alpha;&asymp;2) &mdash; by targeting single, semantically aligned slots, and achieves disentanglement improvements of <b>9&ndash;&infin;&times;</b> over standard SAEs measured via the Mutual Information Gap. It further supports multi-hop reasoning and a mechanistic probe of grokking-like generalization dynamics.</p>
+</section>
 
-          <span class="link-block">
-            <a href="https://arxiv.org/abs/2512.02004" target="_blank"
-                  class="external-link button is-normal is-rounded is-dark">
-                  <span class="icon">
-                    <i class="ai ai-arxiv"></i>
-                  </span>
-                  <span>arXiv</span>
-                </a>
-              </span>
+<!-- ======= THE PROBLEM ======= -->
+<section class="essay" id="problem">
+  <p class="eyebrow">The Problem</p>
+  <h2 class="sec"><span class="sec-num">01</span>Interpretable features you can&rsquo;t actually find</h2>
 
-              <span class="link-block">
-                <a href="https://openreview.net/forum?id=I9UjKxW4nq" target="_blank"
-                  class="external-link button is-normal is-rounded is-dark">
-                  <span class="icon">
-                    <i class="fas fa-book-open"></i>
-                  </span>
-                  <span>OpenReview</span>
-                </a>
-              </span>
-            </div>
-          </div>
+  <p>Mechanistic interpretability wants to read a model&rsquo;s computation off its internal features. But individual neurons are <span class="sn-ref">a</span>polysemantic: because of <em>superposition</em>, a network packs more independent features than it has neurons, so any one neuron fires for an entangled mixture of concepts.</p>
+  <aside class="sidenote"><span class="sn-term">a &middot; Superposition</span>Networks represent more features than neurons by encoding each as a linear combination &mdash; so a single neuron&rsquo;s activation is an entangled mixture of concepts.</aside>
+
+  <p>Sparse Autoencoders <span class="sn-ref">b</span>promised a fix: learn an overcomplete, sparse basis in which features are cleaner than raw neurons. Yet because standard SAEs are trained <em>unsupervised</em>, they have no incentive to align their features with the concepts we care about. Two problems follow. First, <b>finding</b> the feature for a target concept is hard &mdash; you resort to contrast pairs or hunting through top-activating examples. Second, features stay <b>entangled</b>: one concept is smeared across many features, and one feature can answer to several unrelated concepts.</p>
+  <aside class="sidenote"><span class="sn-term">b &middot; Sparse Autoencoder</span>An encoder&ndash;decoder that maps a hidden state to a high-dimensional, sparse code and back, aiming to expose atomic, human-interpretable features.</aside>
+
+  <p>That unreliability undercuts everything downstream that needs feature-level control &mdash; safety steering, knowledge editing, attribution. Our task throughout is <span class="sn-ref">c</span>relation completion, where the concepts are relation types such as <span class="chip">BIRTH_CITY</span>.</p>
+  <aside class="sidenote"><span class="sn-term">c &middot; Relation completion</span>Given a subject and a relation (e.g. a person and <span class="mono">BIRTH_CITY</span>), predict the object value. AlignSAE&rsquo;s ontology concepts are the relation types.</aside>
+
+  <p>The fix takes its cue from how LLMs themselves are trained. Unsupervised SAE training is like <em>pre-training</em>: it discovers a broad feature space but guarantees no alignment. LLMs solve the analogous problem with <em>post-training</em> &mdash; instruction tuning, RLHF. So we add an <b>SAE post-training</b> stage that aligns the feature space with a chosen set of concepts.</p>
+</section>
+
+<!-- ======= SIGNATURE: BINDING MATRIX ======= -->
+<section class="matrix-wrap" id="binding">
+  <p class="eyebrow">The Result, In One Move</p>
+  <h2 class="sec"><span class="sec-num">02</span>Watch entanglement resolve into a clean diagonal</h2>
+  <p style="max-width:var(--measure);">A concept&times;slot binding matrix tells you, for each relation, which latent slot fires. In a shallow layer the mass is smeared off-diagonal &mdash; concepts share slots. At a mid layer, AlignSAE collapses it to a near-perfect diagonal: one concept, one slot. <b>Drag the slider</b> between the shallow layer and Layer&nbsp;6 to perform the transition yourself.</p>
+
+  <div class="matrix-stage">
+    <div class="mx">
+      <div class="mx-grid-outer">
+        <div class="mx-rowlabels" id="rowlabels" aria-hidden="true"></div>
+        <div>
+          <div class="mx-grid" id="mxgrid" role="img" aria-label="Concept by slot binding matrix, transitioning from diffuse to diagonal"></div>
+          <div class="mx-collabels" id="collabels" aria-hidden="true"></div>
+          <div class="mx-axis" style="text-align:center; margin-top:.5rem;">slot index &rarr;</div>
         </div>
       </div>
+      <p class="mx-tip" id="mxtip">Hover a bright diagonal cell to see its concept&ndash;slot binding.</p>
+    </div>
+
+    <div class="mx-panel">
+      <div class="slider-row">
+        <div class="slider-labels"><span>Shallow layer</span><span><b>Layer&nbsp;6</b></span></div>
+        <input type="range" id="mxslider" min="0" max="100" value="100" step="1" aria-label="Layer depth: shallow to Layer 6" aria-valuetext="Layer 6: diagonal binding 1.000, swap success 0.847">
+      </div>
+      <div class="readout" aria-live="polite">
+        <div class="r-line"><span class="r-lab">Diagonal binding accuracy</span><span class="r-val" id="rDiag">1.000</span></div>
+        <div class="r-line"><span class="r-lab">Concept-swap success</span><span class="r-val" id="rSwap">0.847</span></div>
+      </div>
+      <p class="mx-caption">Endpoint metrics are the paper&rsquo;s Layer&nbsp;0 vs Layer&nbsp;6 values (Table&nbsp;1); intermediate positions are interpolated. Per-cell activations shown here are <em>illustrative</em> of the diffuse&rarr;diagonal pattern in Figure&nbsp;3.</p>
+    </div>
+  </div>
+
+  <figure style="max-width:var(--measure);">
+    <img src="plots/heatmap_0_6.png" alt="Paper Figure 3: concept-slot binding confusion matrices at Layer 0 (diffuse) versus Layer 6 (clean diagonal).">
+    <figcaption><b>Figure&nbsp;3, from the paper.</b> Concept&ndash;slot binding at a shallow layer (a) versus a mid layer (b). At Layer&nbsp;0 supervision for each relation is dispersed across multiple slots; at Layer&nbsp;6 the SAE learns a perfect one-to-one binding.</figcaption>
+  </figure>
+</section>
+
+<!-- ======= METHOD ======= -->
+<section id="method">
+  <p class="eyebrow">Method</p>
+  <h2 class="sec"><span class="sec-num">03</span>Pre-train, then post-train</h2>
+  <p style="max-width:var(--measure);">Attach a supervised SAE to one frozen LLM layer. Its code splits into <span class="mono">|R|</span> dedicated <b>concept slots</b> (one per relation) and a large bank of <span class="mono">K</span> <b>free features</b> that carry everything else. Train in two phases &mdash; discover, then align.</p>
+
+  <div class="steps">
+    <div class="step"><div class="n"></div><div>
+      <h3>Pre-train &mdash; discover a feature dictionary</h3>
+      <p>Train the standard SAE objective, <span class="formula">L_SAE = &lambda;<sub>r</sub>&middot;recon + &lambda;<sub>s</sub>&middot;sparsity</span>, so the decoder forms a high-capacity dictionary <em>before</em> any semantic commitment. Applying strong supervision from scratch gives unstable binding &mdash; the unsupervised phase has to stabilize the representation first.</p>
+    </div></div>
+    <div class="step"><div class="n"></div><div>
+      <h3>Post-train &mdash; bind concepts to slots</h3>
+      <p>Keep the pre-trained dictionary and add three supervised losses on a staged schedule, routing each concept&rsquo;s evidence into its slot while keeping the free-feature bank clean. Then verify by reading which slot fires, and steer with a decoder-space <em>swap</em> at moderate amplification (&alpha;&nbsp;&asymp;&nbsp;2).</p>
+    </div></div>
+  </div>
+
+  <div class="losses">
+    <div class="loss">
+      <div class="tag">L_align &middot; loss 1</div>
+      <h4>Concept binding</h4>
+      <p>A supervised cross-entropy that forces a one-to-one map: for an input carrying concept <em>c</em>, slot <em>c</em> activates and the rest are suppressed &mdash; so slot activations become a direct, verifiable readout.</p>
+    </div>
+    <div class="loss">
+      <div class="tag">L_perp &middot; loss 2</div>
+      <h4>Invariance &amp; decorrelation</h4>
+      <p>A penalty that decorrelates each concept slot from the free-feature bank, making slots invariant to surface variation and stopping concept evidence from leaking into the unsupervised features.</p>
+    </div>
+    <div class="loss">
+      <div class="tag">L_val &middot; loss 3</div>
+      <h4>Sufficiency</h4>
+      <p>An auxiliary value head must predict the concept&rsquo;s <em>answer</em> from the concept slots alone &mdash; a stronger guarantee than naming the relation: the slot must carry enough to reproduce the value.</p>
     </div>
   </div>
 </section>
 
+<!-- ======= RESULTS ======= -->
+<section id="results">
+  <p class="eyebrow">Results</p>
+  <h2 class="sec"><span class="sec-num">04</span>Clean binding, and control that actually works</h2>
 
-<!-- Main Figure -->
-<section class="hero teaser">
-  <div class="container is-max-desktop">
-    <div class="hero-body">
-      <img src="figures/main.png" alt="AlignSAE Overview" style="width: 100%; max-width: 1400px; margin: 0 auto; display: block;">
-      <h2 class="subtitle has-text-centered" style="margin-top: 1.5rem;">
-        <strong>Overview of AlignSAE:</strong> Left: An unsupervised SAE trained post hoc on frozen LLM activations optimizes only reconstruction and sparsity, so each concept tends to be spread across multiple features, making interventions unreliable. Right: Our AlignSAE adds a supervised binding loss that maps each concept in a predefined ontology to a dedicated feature, yielding clean, isolated activations that are easy to find, interpret, and steer.
-      </h2>
-    </div>
+  <div class="stats">
+    <div class="stat"><div class="v">85%</div><div class="l">1-hop concept-swap success</div><div class="n">measured optimum: 0.847 at &alpha;&asymp;2 (Layer 6, Table 1)</div></div>
+    <div class="stat"><div class="v">9&ndash;&infin;&times;</div><div class="l">disentanglement gain (MIG)</div><div class="n">&infin; in 1-hop (0.173 vs 0.000); 9.2&times; in 2-hop</div></div>
+    <div class="stat"><div class="v">0.912</div><div class="l">unseen-template generalization</div><div class="n">Test-Unseen accuracy at Layer 6 vs 0.165 at Layer 0</div></div>
+    <div class="stat"><div class="v">100%</div><div class="l">step-wise 2-hop binding</div><div class="n">perfectly diagonal at both the e&#8322; (r&#8321;) and e&#8323; (r&#8322;) steps</div></div>
+    <div class="stat"><div class="v">4&times;</div><div class="l">2-hop swap vs standard SAE</div><div class="n">at &alpha;&asymp;50; also beats a &tilde;100%-accurate linear probe</div></div>
+    <div class="stat"><div class="v">95.6%</div><div class="l">binding at 91-relation scale</div><div class="n">FB15K diagonal accuracy; OOD binding 75.7% vs 1.1% chance</div></div>
+  </div>
+
+  <div class="tbl-wrap">
+    <table class="book">
+      <caption>Table 1 &middot; Layer 0 vs Layer 6 (1-hop). The mid-layer sweet spot.</caption>
+      <thead><tr><th>Metric</th><th>Layer 0</th><th>Layer 6</th><th>&Delta;</th></tr></thead>
+      <tbody>
+        <tr><td>Diagonal binding acc &uarr;</td><td>0.238</td><td class="strong">1.000</td><td><span class="chip">+0.76</span></td></tr>
+        <tr><td>Swap success &uarr;</td><td>0.040</td><td class="strong">0.847</td><td><span class="chip">+0.81</span></td></tr>
+        <tr><td>Train slot acc &uarr;</td><td>0.232</td><td class="strong">1.000</td><td><span class="chip">+0.77</span></td></tr>
+        <tr><td>Test-Unseen acc &uarr;</td><td>0.165</td><td class="strong">0.912</td><td><span class="chip">+0.75</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="swapcard">
+    <div class="row"><div class="k">Swap test</div><div class="val">Q: When was this person born? &nbsp;<span class="slot">amplify UNIVERSITY slot &rarr;</span></div></div>
+    <div class="row"><div class="k">Base output</div><div class="val">&ldquo;24, March, 1964&rdquo;</div></div>
+    <div class="row"><div class="k">After swap</div><div class="val flip">&ldquo;Wesleyan University&rdquo;</div></div>
+  </div>
+  <p style="max-width:var(--measure);font-size:.9rem;color:var(--muted);margin-top:.9rem;" class="mono">Amplifying one concept slot (&alpha;&asymp;2 at Layer 6) flips the answer type &mdash; slots are causal control knobs, not just diagnostics.</p>
+
+  <p style="max-width:var(--measure);margin-top:1.8rem;">The six 1-hop ontology concepts, each bound to its own slot:</p>
+  <div class="concepts">
+    <span class="c">BIRTH_DATE</span><span class="c">BIRTH_CITY</span><span class="c">UNIVERSITY</span><span class="c">MAJOR</span><span class="c">EMPLOYER</span><span class="c">WORK_CITY</span>
+  </div>
+
+  <div class="fig-pair" style="margin-top:2.4rem;">
+    <figure style="margin-top:0;">
+      <img src="figures/web_fragmentation.png" alt="Concept fragmentation across layers: AlignSAE stays near 1 effective feature per concept while a traditional SAE spans hundreds to thousands.">
+      <figcaption><b>Fragmentation &darr;.</b> AlignSAE concentrates each concept onto &asymp;1 effective feature; a traditional SAE spreads it across hundreds&ndash;thousands.</figcaption>
+    </figure>
+    <figure style="margin-top:0;">
+      <img src="plots/swap_controllability_heatmap.png" alt="Swap controllability heatmap across layers and amplification strength; mid layers around alpha 2 are the robust regime.">
+      <figcaption><b>Swap controllability.</b> Across layers and amplification &alpha;. Mid layers stay robust around &alpha;&asymp;2; over-amplification destabilizes the intervention.</figcaption>
+    </figure>
   </div>
 </section>
 
-<!-- Paper abstract -->
-<section class="section hero is-light">
-  <div class="container is-max-desktop">
-    <div class="columns is-centered has-text-centered">
-      <div class="column is-four-fifths">
-        <h2 class="title is-3">Abstract</h2>
-        <div class="content has-text-justified">
-          <p>
-            Large Language Models (LLMs) encode factual knowledge within hidden parametric spaces that are difficult to inspect or control. While Sparse Autoencoders (SAEs) can decompose hidden activations into more fine-grained, interpretable features, they often struggle to reliably align these features with human-defined concepts, resulting in entangled and distributed feature representations.
-          </p>
-          <p>
-            To address this, we introduce <strong>AlignSAE</strong>, a method that aligns SAE features with a predefined ontology through a "pre-train, then post-train" curriculum. After an initial unsupervised training phase, we apply supervised post-training to bind specific concepts to dedicated latent slots while preserving the remaining capacity for general reconstruction. This separation creates an interpretable interface where specific concepts can be inspected and controlled without interference from unrelated features.
-          </p>
-          <p>
-            Empirical results demonstrate that AlignSAE enables precise causal interventions, such as reliable "concept swaps", by targeting single, semantically aligned slots, and further supports multi-hop reasoning and a mechanistic probe of grokking-like generalization dynamics.
-          </p>
-        </div>
-      </div>
-    </div>
+<!-- ======= 2-HOP ======= -->
+<section id="twohop">
+  <p class="eyebrow">Composition</p>
+  <h2 class="sec"><span class="sec-num">05</span>Step-wise binding in 2-hop reasoning</h2>
+  <p style="max-width:var(--measure);">Two-hop reasoning (20 relations, 60 entities) routes each prediction through an intermediate entity, so binding can be verified and intervened <em>at the exact step</em> each relation is used. AlignSAE reaches <b>100%</b> step-wise binding and <b>4&times;</b> higher swap success than a standard SAE at &alpha;&asymp;50 &mdash; while the paper is candid that absolute 2-hop swap stays modest (7.86%): a single-position intervention can&rsquo;t fully redirect attention-distributed computation. <b>Binding does not equal full causal control.</b></p>
+
+  <figure style="max-width:none;">
+    <img src="figures/web_fig2_2_hop_final.png" alt="Two-hop task schematic: the model routes a query through an intermediate entity, with each hop's relation bound to a concept slot.">
+    <figcaption style="max-width:none;"><b>The 2-hop task.</b> Each query composes two relations through an intermediate entity; step-wise supervision binds the first relation&rsquo;s slot at the intermediate step and the second at the final step.</figcaption>
+  </figure>
+</section>
+
+<!-- ======= GROKKING ======= -->
+<section id="grokking">
+  <p class="eyebrow">Mechanistic Probe</p>
+  <h2 class="sec"><span class="sec-num">06</span>Grokking: knowing before showing</h2>
+  <p style="max-width:var(--measure);">Because its slots are concept-aligned, AlignSAE doubles as a diagnostic for grokking. Top-1 binding accuracy saturates <em>early</em>, while validation accuracy lags with a delayed jump &mdash; a &ldquo;lag between knowing and showing.&rdquo; The model first organizes concept structure into stable slot features, and only later learns to <em>use</em> it for out-of-distribution generalization. Step-wise binding jumps from <b>38.4%</b> (epoch 10) to <b>100%</b> (epoch 40), ahead of the accuracy jump.</p>
+
+  <div class="fig-pair">
+    <figure style="margin-top:0;">
+      <img src="figures/web_combined_accuracy_left_label_linear_v2.png" alt="Grokking curve: Top-1 binding accuracy rises and saturates early while validation accuracy jumps later.">
+      <figcaption><b>Knowing before showing.</b> Binding accuracy saturates early; validation accuracy makes a delayed jump.</figcaption>
+    </figure>
+    <figure style="margin-top:0;">
+      <img src="figures/web_swap_comparison_2hop.png" alt="Two-hop swap success versus amplification: supervised AlignSAE peaks near alpha 50, well above the unsupervised SAE.">
+      <figcaption><b>2-hop swap vs &alpha;.</b> Supervised AlignSAE (post) peaks near &alpha;&asymp;50, &tilde;4&times; the unsupervised SAE (pre).</figcaption>
+    </figure>
   </div>
+
+  <figure style="max-width:none;">
+    <img src="figures/web_binding_comparison_acl_figure.png" alt="Relation-to-slot binding, pre- versus post-grokking: four confusion matrices over 20 relations moving from diffuse to perfectly diagonal.">
+    <figcaption style="max-width:none;"><b>Pre- vs post-grokking binding.</b> Relation&rarr;slot confusion over 20 relations at both step positions: diffuse before grokking (epoch 10), perfectly diagonal after (epoch 40).</figcaption>
+  </figure>
 </section>
-<!-- End paper abstract -->
 
+<!-- ======= SCALABILITY ======= -->
+<section id="scale">
+  <p class="eyebrow">Scale</p>
+  <h2 class="sec"><span class="sec-num">07</span>Ninety-one relations, still diagonal</h2>
+  <p style="max-width:var(--measure);">Scaling the ontology to a 91-relation subset of FB15K &mdash; same architecture, same Layer&nbsp;6, only more slots &mdash; AlignSAE reaches <b>98.7%</b> train binding and <b>95.6%</b> diagonal accuracy, with <b>75.7%</b> out-of-distribution binding on unseen templates and persons (chance is 1.1%). Reconstruction stays comparable to the small-ontology setting; only relations with very few training entities bind weakly.</p>
+</section>
 
-<!-- Key Contributions -->
-<section class="hero is-small">
-  <div class="hero-body">
-    <div class="container is-max-desktop">
-      <h2 class="title is-3 has-text-centered">Key Contributions</h2>
-      <div class="columns is-multiline" style="margin-top: 2rem;">
-        <div class="column is-half">
-          <div class="box" style="height: 100%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
-            <h3 class="title is-4" style="color: white;">🎯 Concept-Aligned Features</h3>
-            <p>Post-training supervision binds each ontology concept to a dedicated SAE slot, creating a one-to-one mapping that is easy to find, interpret, and control.</p>
-          </div>
-        </div>
-        <div class="column is-half">
-          <div class="box" style="height: 100%; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white;">
-            <h3 class="title is-4" style="color: white;">🔄 Causal Interventions</h3>
-            <p>Enables precise "concept swaps" by targeting single slots, achieving 85% swap success at moderate amplification (α≈2) in mid-layers.</p>
-          </div>
-        </div>
-        <div class="column is-half">
-          <div class="box" style="height: 100%; background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white;">
-            <h3 class="title is-4" style="color: white;">🧩 Multi-Hop Reasoning</h3>
-            <p>Step-wise concept binding supports compositional reasoning, with 4× higher swap success than traditional SAEs in 2-hop tasks.</p>
-          </div>
-        </div>
-        <div class="column is-half">
-          <div class="box" style="height: 100%; background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); color: white;">
-            <h3 class="title is-4" style="color: white;">🔬 Grokking Analysis</h3>
-            <p>Reveals how concept representations transition from diffuse to diagonal during grokking, providing mechanistic insights into generalization.</p>
-          </div>
-        </div>
-      </div>
-      
-      <!-- Key Slides Carousel -->
-      <div style="margin-top: 3rem;">
-        <h2 class="title is-2 has-text-centered" style="margin-bottom: 2rem; font-weight: 700;">📊 Slide Show</h2>
-        <div id="contributions-carousel" class="carousel results-carousel" data-autoplay="false" data-loop="false" data-infinite="false">
-          <div class="item">
-            <img src="AlignSAE/Slide5.png" srcset="AlignSAE/Slide5.png 3840w" sizes="100vw" decoding="async" alt="Motivation and Problem" loading="eager" style="width: 100%; height: auto; margin: 0 auto; display: block; cursor: pointer; image-rendering: -webkit-optimize-contrast; image-rendering: crisp-edges;" onclick="window.open('https://ymingl.com/assets/pdf/AlignSAEslides.pdf#page=5', '_blank')">
-          </div>
-          <div class="item">
-            <img src="AlignSAE/Slide8.png" srcset="AlignSAE/Slide8.png 3840w" sizes="100vw" decoding="async" alt="Method Overview" loading="eager" style="width: 100%; height: auto; margin: 0 auto; display: block; cursor: pointer; image-rendering: -webkit-optimize-contrast; image-rendering: crisp-edges;" onclick="window.open('https://ymingl.com/assets/pdf/AlignSAEslides.pdf#page=8', '_blank')">
-          </div>
-          <div class="item">
-            <img src="AlignSAE/Slide11.png" srcset="AlignSAE/Slide11.png 3840w" sizes="100vw" decoding="async" alt="Loss Functions" loading="eager" style="width: 100%; height: auto; margin: 0 auto; display: block; cursor: pointer; image-rendering: -webkit-optimize-contrast; image-rendering: crisp-edges;" onclick="window.open('https://ymingl.com/assets/pdf/AlignSAEslides.pdf#page=11', '_blank')">
-          </div>
-          <div class="item">
-            <img src="AlignSAE/Slide12.png" srcset="AlignSAE/Slide12.png 3840w" sizes="100vw" decoding="async" alt="Training Curriculum" loading="eager" style="width: 100%; height: auto; margin: 0 auto; display: block; cursor: pointer; image-rendering: -webkit-optimize-contrast; image-rendering: crisp-edges;" onclick="window.open('https://ymingl.com/assets/pdf/AlignSAEslides.pdf#page=12', '_blank')">
-          </div>
-          <div class="item">
-            <img src="AlignSAE/Slide13.png" srcset="AlignSAE/Slide13.png 3840w" sizes="100vw" decoding="async" alt="Implementation Details" loading="eager" style="width: 100%; height: auto; margin: 0 auto; display: block; cursor: pointer; image-rendering: -webkit-optimize-contrast; image-rendering: crisp-edges;" onclick="window.open('https://ymingl.com/assets/pdf/AlignSAEslides.pdf#page=13', '_blank')">
-          </div>
-          <div class="item">
-            <img src="AlignSAE/Slide14.png" srcset="AlignSAE/Slide14.png 3840w" sizes="100vw" decoding="async" alt="Experimental Setup" loading="eager" style="width: 100%; height: auto; margin: 0 auto; display: block; cursor: pointer; image-rendering: -webkit-optimize-contrast; image-rendering: crisp-edges;" onclick="window.open('https://ymingl.com/assets/pdf/AlignSAEslides.pdf#page=14', '_blank')">
-          </div>
-          <div class="item">
-            <img src="AlignSAE/Slide15.png" srcset="AlignSAE/Slide15.png 3840w" sizes="100vw" decoding="async" alt="Binding Results" loading="eager" style="width: 100%; height: auto; margin: 0 auto; display: block; cursor: pointer; image-rendering: -webkit-optimize-contrast; image-rendering: crisp-edges;" onclick="window.open('https://ymingl.com/assets/pdf/AlignSAEslides.pdf#page=15', '_blank')">
-          </div>
-          <div class="item">
-            <img src="AlignSAE/Slide18.png" srcset="AlignSAE/Slide18.png 3840w" sizes="100vw" decoding="async" alt="Swap Interventions" loading="eager" style="width: 100%; height: auto; margin: 0 auto; display: block; cursor: pointer; image-rendering: -webkit-optimize-contrast; image-rendering: crisp-edges;" onclick="window.open('https://ymingl.com/assets/pdf/AlignSAEslides.pdf#page=18', '_blank')">
-          </div>
-          <div class="item">
-            <img src="AlignSAE/Slide21.png" srcset="AlignSAE/Slide21.png 3840w" sizes="100vw" decoding="async" alt="Fragmentation Analysis" loading="eager" style="width: 100%; height: auto; margin: 0 auto; display: block; cursor: pointer; image-rendering: -webkit-optimize-contrast; image-rendering: crisp-edges;" onclick="window.open('https://ymingl.com/assets/pdf/AlignSAEslides.pdf#page=21', '_blank')">
-          </div>
-          <div class="item">
-            <img src="AlignSAE/Slide22.png" srcset="AlignSAE/Slide22.png 3840w" sizes="100vw" decoding="async" alt="Multi-hop Reasoning" loading="eager" style="width: 100%; height: auto; margin: 0 auto; display: block; cursor: pointer; image-rendering: -webkit-optimize-contrast; image-rendering: crisp-edges;" onclick="window.open('https://ymingl.com/assets/pdf/AlignSAEslides.pdf#page=22', '_blank')">
-          </div>
-          <div class="item">
-            <img src="AlignSAE/Slide25.png" srcset="AlignSAE/Slide25.png 3840w" sizes="100vw" decoding="async" alt="Grokking Analysis" loading="eager" style="width: 100%; height: auto; margin: 0 auto; display: block; cursor: pointer; image-rendering: -webkit-optimize-contrast; image-rendering: crisp-edges;" onclick="window.open('https://ymingl.com/assets/pdf/AlignSAEslides.pdf#page=25', '_blank')">
-          </div>
-          <div class="item">
-            <img src="AlignSAE/Slide26.png" srcset="AlignSAE/Slide26.png 3840w" sizes="100vw" decoding="async" alt="Related Work" loading="eager" style="width: 100%; height: auto; margin: 0 auto; display: block; cursor: pointer; image-rendering: -webkit-optimize-contrast; image-rendering: crisp-edges;" onclick="window.open('https://ymingl.com/assets/pdf/AlignSAEslides.pdf#page=26', '_blank')">
-          </div>
-          <div class="item">
-            <img src="AlignSAE/Slide27.png" srcset="AlignSAE/Slide27.png 3840w" sizes="100vw" decoding="async" alt="Limitations" loading="eager" style="width: 100%; height: auto; margin: 0 auto; display: block; cursor: pointer; image-rendering: -webkit-optimize-contrast; image-rendering: crisp-edges;" onclick="window.open('https://ymingl.com/assets/pdf/AlignSAEslides.pdf#page=27', '_blank')">
-          </div>
-          <div class="item">
-            <img src="AlignSAE/Slide28.png" srcset="AlignSAE/Slide28.png 3840w" sizes="100vw" decoding="async" alt="Conclusion" loading="eager" style="width: 100%; height: auto; margin: 0 auto; display: block; cursor: pointer; image-rendering: -webkit-optimize-contrast; image-rendering: crisp-edges;" onclick="window.open('https://ymingl.com/assets/pdf/AlignSAEslides.pdf#page=28', '_blank')">
-          </div>
-          <div class="item">
-            <img src="AlignSAE/Slide30.png" srcset="AlignSAE/Slide30.png 3840w" sizes="100vw" decoding="async" alt="Thank You" loading="eager" style="width: 100%; height: auto; margin: 0 auto; display: block; cursor: pointer; image-rendering: -webkit-optimize-contrast; image-rendering: crisp-edges;" onclick="window.open('https://ymingl.com/assets/pdf/AlignSAEslides.pdf#page=30', '_blank')">
-          </div>
-        </div>
-      </div>
-    </div>
+<!-- ======= TAKEAWAYS ======= -->
+<section id="takeaways" class="measure">
+  <p class="eyebrow">In Short</p>
+  <h2 class="sec"><span class="sec-num">08</span>What to take away</h2>
+  <ul style="padding-left:1.1rem;">
+    <li style="margin-bottom:.8rem;">Reframes SAE interpretability as an <b>alignment</b> problem: a post-training stage &mdash; analogous to instruction tuning or RLHF &mdash; turns a diagnostic tool into an operational, verifiable, controllable interface over a frozen model.</li>
+    <li style="margin-bottom:.8rem;">Three post-training losses on a staged curriculum: <b>binding</b> (one slot per concept), <b>invariance</b> (no leakage into free features), and <b>sufficiency</b> (a value head predicts the answer from slots alone).</li>
+    <li style="margin-bottom:.8rem;">Clean single-slot control on 1-hop QA &mdash; &asymp;85% swap success (0.847 at &alpha;&asymp;2), one-to-one binding, 9&ndash;&infin;&times; disentanglement &mdash; and steering that preserves fluency while sharply cutting perplexity versus the no-SAE baseline.</li>
+    <li>Extends to composition and scale (100% step-wise 2-hop binding, 4&times; swap gain, 95.6% across 91 relations) while honestly documenting that binding &ne; full causal control in multi-hop reasoning.</li>
+  </ul>
+</section>
+
+<!-- ======= CITATION ======= -->
+<section id="cite" class="bibtex">
+  <p class="eyebrow">Citation</p>
+  <div class="bib-head">
+    <h2 class="sec" style="margin:0;"><span class="sec-num">09</span>BibTeX</h2>
+    <button class="copybtn" id="copyBib">Copy</button>
   </div>
+<pre class="bib" id="bibText">@article{yang2026alignsae,
+  title   = {AlignSAE: Concept-Aligned Sparse Autoencoders},
+  author  = {Minglai Yang and Xinyu Guo and Zhengliang Shi and Jinhe Bi
+             and Steven Bethard and Mihai Surdeanu and Liangming Pan},
+  journal = {Transactions on Machine Learning Research},
+  issn    = {2835-8856},
+  year    = {2026},
+  url     = {https://openreview.net/forum?id=I9UjKxW4nq}
+}</pre>
 </section>
 
+</main>
 
-<!-- Method Section -->
-<section class="hero is-small is-light">
-  <div class="hero-body">
-    <div class="container is-max-desktop">
-      <h2 class="title is-3 has-text-centered">Method</h2>
-      <div class="content has-text-justified">
-        <h3 class="title is-4">Two-Stage Training Curriculum</h3>
-        <p>
-          AlignSAE follows a <strong>"pre-train, then post-train"</strong> curriculum inspired by LLM training pipelines:
-        </p>
-        <ul>
-          <li><strong>Pre-training (Stage 1):</strong> The SAE is trained on reconstruction and sparsity losses, allowing the decoder to form a high-capacity dictionary of features.</li>
-          <li><strong>Post-training (Stage 2):</strong> We add supervised losses to bind specific concepts to dedicated slots while keeping the majority of features free for general reconstruction.</li>
-        </ul>
-        
-        <h3 class="title is-4">Multi-Objective Loss Function</h3>
-        <p>Our training objective augments the standard SAE loss with three additional components:</p>
-        <div class="box" style="background: #f8f9fa;">
-          <p style="font-size: 1.1rem; text-align: center; margin-bottom: 1.5rem;">
-            $$\mathcal{L} = \mathcal{L}_{\text{SAE}} + \lambda_{\text{bind}}\mathcal{L}_{\text{bind}} + \lambda_{\perp}\mathcal{L}_{\perp} + \lambda_{\text{val}}\mathcal{L}_{\text{val}}$$
-          </p>
-          <div style="margin-top: 1.5rem;">
-            <p><strong>1. Standard SAE Loss:</strong></p>
-            <p style="margin-left: 1.5rem; margin-top: 0.5rem;">
-              $$\mathcal{L}_{\text{SAE}} = \lambda_{\text{rec}}\|\mathbf{h} - \hat{\mathbf{h}}\|^2 + \lambda_{\text{sp}}\|\mathbf{z}\|_1$$
-            </p>
-            <p style="margin-left: 2rem; margin-top: 0.5rem; color: #555;">
-              where $\mathbf{h} \in \mathbb{R}^d$ is the original activation and $\hat{\mathbf{h}} = \mathbf{W}_{\text{dec}}\mathbf{z}$ is the reconstruction
-            </p>
-          </div>
-          <div style="margin-top: 1rem;">
-            <p><strong>2. Concept Binding Loss:</strong></p>
-            <p style="margin-left: 1.5rem; margin-top: 0.5rem;">
-              $$\mathcal{L}_{\text{bind}} = \text{CE}\left(\text{softmax}(\mathbf{z}_{\text{concept}}), y_{\text{rel}}\right)$$
-            </p>
-            <p style="margin-left: 2rem; margin-top: 0.5rem; color: #555;">
-              Cross-entropy loss that assigns each relation $r \in \mathcal{R}$ to a dedicated concept slot
-            </p>
-          </div>
-          <div style="margin-top: 1rem;">
-            <p><strong>3. Orthogonality Loss:</strong></p>
-            <p style="margin-left: 1.5rem; margin-top: 0.5rem;">
-              $$\mathcal{L}_{\perp} = \left\|\text{corr}(\mathbf{z}_{\text{concept}}, \mathbf{z}_{\text{rest}})\right\|_F^2$$
-            </p>
-            <p style="margin-left: 2rem; margin-top: 0.5rem; color: #555;">
-              Decorrelation penalty to reduce concept leakage into free features
-            </p>
-          </div>
-          <div style="margin-top: 1rem;">
-            <p><strong>4. Value Prediction Loss:</strong></p>
-            <p style="margin-left: 1.5rem; margin-top: 0.5rem;">
-              $$\mathcal{L}_{\text{val}} = \text{CE}\left(\text{softmax}(\mathcal{V}(\mathbf{z}_{\text{concept}})), y_{\text{ans}}\right)$$
-            </p>
-            <p style="margin-left: 2rem; margin-top: 0.5rem; color: #555;">
-              Ensures concept slots are task-informative for answer prediction
-            </p>
-          </div>
-        </div>
-
-        <h3 class="title is-4">Architecture</h3>
-        <p>
-          We attach the SAE to a frozen GPT-2 model and extract activations from intermediate layers. The SAE has:
-        </p>
-        <ul>
-          <li><strong>100,000 free slots</strong> for unsupervised feature learning</li>
-          <li><strong>|R| concept slots</strong> (one per ontology concept) for supervised alignment</li>
-          <li><strong>Lightweight value heads</strong> for diagnostic validation of slot informativeness</li>
-        </ul>
-        <div style="text-align: center; margin-top: 2rem;">
-          <img src="plots/Picture1.png" alt="AlignSAE Architecture Diagram" style="width: 100%; max-width: 800px; margin: 0 auto; display: block;">
-          <p class="subtitle has-text-centered" style="margin-top: 1rem; color: #555;">
-            Input activation $h$ is encoded into latent code $z$, split into supervised Concept Slots and unsupervised Free Features
-          </p>
-        </div>
-      </div>
+<footer>
+  <div class="fin">
+    <div class="flinks">
+      <a href="https://openreview.net/forum?id=I9UjKxW4nq" target="_blank" rel="noopener">TMLR / OpenReview</a> &nbsp;&middot;&nbsp;
+      <a href="https://arxiv.org/abs/2512.02004" target="_blank" rel="noopener">arXiv</a> &nbsp;&middot;&nbsp;
+      <a href="https://github.com/yminglai/AlignSAE" target="_blank" rel="noopener">Code &amp; Data</a> &nbsp;&middot;&nbsp;
+      <a href="https://ymingl.com/assets/pdf/AlignSAEslides.pdf" target="_blank" rel="noopener">Slides</a> &nbsp;&middot;&nbsp;
+      <a href="https://clulab.org/" target="_blank" rel="noopener">CLU Lab</a>
     </div>
-  </div>
-</section>
-
-<!-- Experimental Setup -->
-<section class="hero is-small">
-  <div class="hero-body">
-    <div class="container is-max-desktop">
-      <h2 class="title is-3 has-text-centered">Experimental Setup</h2>
-      <div class="content has-text-justified">
-        <div class="columns">
-          <div class="column">
-            <h3 class="title is-4">1-Hop Factual Recall</h3>
-            <p>
-              We evaluate on a biography QA task with 6 relations: <code>BIRTH_DATE</code>, <code>BIRTH_CITY</code>, <code>UNIVERSITY</code>, <code>MAJOR</code>, <code>EMPLOYER</code>, <code>WORK_CITY</code>.
-            </p>
-            <ul>
-              <li>1,000 synthetic person profiles</li>
-              <li>4 question templates per relation (2 train, 2 test)</li>
-              <li>Evaluation on unseen paraphrase templates</li>
-            </ul>
-          </div>
-          <div class="column">
-            <h3 class="title is-4">2-Hop Compositional Reasoning</h3>
-            <p>
-              We extend to multi-hop reasoning with 20 relations over 60 entities. Each query requires inferring: <strong>e<sub>1</sub> →<sup>r<sub>1</sub></sup> e<sub>2</sub> →<sup>r<sub>2</sub></sup> e<sub>3</sub></strong>
-            </p>
-            <ul>
-              <li>8,000 question-answer pairs</li>
-              <li>Step-wise supervision at each hop</li>
-              <li>4× higher swap success than traditional SAEs</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-
-<!--BibTex citation -->
-  <section class="section" id="BibTeX">
-    <div class="container is-max-desktop content">
-      <div class="bibtex-header">
-        <h2 class="title">BibTeX</h2>
-        <button class="copy-bibtex-btn" onclick="copyBibTeX()" title="Copy BibTeX to clipboard">
-          <i class="fas fa-copy"></i>
-          <span class="copy-text">Copy</span>
-        </button>
-      </div>
-      <pre id="bibtex-code"><code>@article{yang2026alignsae,
-  title={AlignSAE: Concept-Aligned Sparse Autoencoders},
-  author={Minglai Yang and Xinyu Guo and Zhengliang Shi and Jinhe Bi and Steven Bethard and Mihai Surdeanu and Liangming Pan},
-  journal={Transactions on Machine Learning Research},
-  issn={2835-8856},
-  year={2026},
-  url={https://openreview.net/forum?id=I9UjKxW4nq}
-}</code></pre>
-    </div>
-</section>
-<!--End BibTex citation -->
-
-
-  <footer class="footer">
-  <div class="container">
-    <div class="columns is-centered">
-      <div class="column is-8">
-        <div class="content has-text-centered">
-          <p>
-            <strong>AlignSAE: Concept-Aligned Sparse Autoencoders</strong>
-          </p>
-          <p>
-            <a href="https://openreview.net/forum?id=I9UjKxW4nq" target="_blank">TMLR (OpenReview)</a> •
-            <a href="https://arxiv.org/abs/2512.02004" target="_blank">arXiv</a> •
-            <a href="https://github.com/yminglai/AlignSAE" target="_blank">Code</a> •
-            <a href="https://ymingl.com/assets/pdf/AlignSAEslides.pdf" target="_blank">Slides</a> •
-            <a href="https://clulab.org/" target="_blank">CLU Lab</a>
-          </p>
-          <p style="margin-top: 1.5rem; font-size: 0.9rem;">
-            This page was built using the <a href="https://github.com/eliahuhorwitz/Academic-project-page-template" target="_blank">Academic Project Page Template</a>. 
-            This website is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/" target="_blank">Creative Commons Attribution-ShareAlike 4.0 International License</a>.
-          </p>
-        </div>
-      </div>
-    </div>
+    <div><b>AlignSAE: Concept-Aligned Sparse Autoencoders</b> &middot; Yang, Guo, Shi, Bi, Bethard, Surdeanu &amp; Pan &middot; TMLR 2026</div>
+    <div class="tiny">University of Arizona &middot; Carnegie Mellon University &middot; LMU Munich &middot; Peking University. Contact: <span class="mono">mingly@arizona.edu</span></div>
   </div>
 </footer>
 
-  </main>
-  </body>
-  </html>
+<script>
+(function () {
+  /* ---- theme toggle ---- */
+  var root = document.documentElement, btn = document.getElementById('themeToggle');
+  function apply(t){
+    root.setAttribute('data-theme', t);
+    btn.setAttribute('aria-pressed', String(t==='dark'));
+    btn.setAttribute('aria-label', t==='dark' ? 'Switch to light theme' : 'Switch to dark theme');
+    try{ localStorage.setItem('alignsae-theme', t);}catch(e){}
+  }
+  apply(root.getAttribute('data-theme') || 'light');
+  btn.addEventListener('click', function(){ apply(root.getAttribute('data-theme')==='dark'?'light':'dark'); });
+
+  /* ---- concept labels ---- */
+  var CONCEPTS = ['BIRTH_DATE','BIRTH_CITY','UNIVERSITY','MAJOR','EMPLOYER','WORK_CITY'];
+  var SHORT    = ['b.date','b.city','univ.','major','empl.','w.city'];
+
+  /* ---- two endpoint matrices (illustrative activations) ---- */
+  /* shallow layer: diffuse, heavy off-diagonal, weak diagonal */
+  var ENTANGLED = [
+    [0.34,0.18,0.12,0.10,0.14,0.12],
+    [0.20,0.30,0.14,0.12,0.10,0.14],
+    [0.12,0.15,0.28,0.20,0.13,0.12],
+    [0.14,0.12,0.22,0.26,0.16,0.10],
+    [0.16,0.12,0.14,0.15,0.30,0.13],
+    [0.13,0.16,0.11,0.13,0.16,0.31]
+  ];
+  /* mid layer: near-identity */
+  var CLEAN = [
+    [0.98,0.01,0.00,0.00,0.01,0.00],
+    [0.01,0.98,0.01,0.00,0.00,0.00],
+    [0.00,0.01,0.99,0.00,0.00,0.00],
+    [0.00,0.00,0.01,0.98,0.01,0.00],
+    [0.01,0.00,0.00,0.01,0.98,0.00],
+    [0.00,0.00,0.00,0.00,0.01,0.99]
+  ];
+
+  var grid = document.getElementById('mxgrid');
+  var rowL = document.getElementById('rowlabels');
+  var colL = document.getElementById('collabels');
+  var tip  = document.getElementById('mxtip');
+  var cells = [];
+  for (var i=0;i<6;i++){
+    var rl=document.createElement('span'); rl.textContent=SHORT[i]; rl.style.minHeight='1.2em'; rowL.appendChild(rl);
+    var cl=document.createElement('div'); cl.textContent=i; colL.appendChild(cl);
+    for (var j=0;j<6;j++){
+      var c=document.createElement('div');
+      c.className='cell'+(i===j?' diag':'');
+      c.dataset.i=i; c.dataset.j=j;
+      if(i===j){ c.tabIndex=0; c.setAttribute('role','img'); c.setAttribute('aria-label', CONCEPTS[i]+' bound to slot '+i); }
+      else { c.tabIndex=-1; c.setAttribute('aria-hidden','true'); }
+      grid.appendChild(c); cells.push(c);
+    }
+  }
+
+  function cssvar(n){ return getComputedStyle(root).getPropertyValue(n).trim(); }
+  function render(t){
+    for (var k=0;k<cells.length;k++){
+      var c=cells[k], i=+c.dataset.i, j=+c.dataset.j;
+      var v = ENTANGLED[i][j]*(1-t) + CLEAN[i][j]*t;
+      if (i===j){
+        c.style.background = cssvar('--warm');
+        c.style.opacity = (0.12 + 0.88*v).toFixed(3);
+      } else {
+        c.style.background = cssvar('--cool');
+        c.style.opacity = (0.85*v).toFixed(3);
+      }
+    }
+    var d=(0.238 + (1.000-0.238)*t), s=(0.040 + (0.847-0.040)*t);
+    document.getElementById('rDiag').textContent = d.toFixed(3);
+    document.getElementById('rSwap').textContent = s.toFixed(3);
+    slider.setAttribute('aria-valuetext','diagonal binding '+d.toFixed(3)+', swap success '+s.toFixed(3));
+  }
+  var slider=document.getElementById('mxslider');
+  slider.addEventListener('input', function(){ render(this.value/100); });
+
+  function tipFor(el){
+    var i=+el.dataset.i;
+    tip.textContent = 'slot['+i+'] ← '+CONCEPTS[i]+'  ·  one concept, one slot';
+  }
+  function clearTip(){ tip.textContent='Hover a bright diagonal cell to see its concept–slot binding.'; }
+  cells.forEach(function(el){
+    if(!el.classList.contains('diag')) return;
+    el.addEventListener('mouseenter',function(){tipFor(el);});
+    el.addEventListener('focus',function(){tipFor(el);});
+    el.addEventListener('mouseleave',clearTip);
+    el.addEventListener('blur',clearTip);
+  });
+
+  render(1); // start aligned; user can drag back to entangled
+  // re-render on theme change so cell colors track the palette
+  new MutationObserver(function(){ render(slider.value/100); })
+    .observe(root,{attributes:true,attributeFilter:['data-theme']});
+
+  /* ---- copy bibtex ---- */
+  var cb=document.getElementById('copyBib');
+  cb.addEventListener('click', function(){
+    var txt=document.getElementById('bibText').innerText;
+    navigator.clipboard.writeText(txt).then(function(){
+      cb.textContent='Copied'; cb.classList.add('done');
+      setTimeout(function(){cb.textContent='Copy';cb.classList.remove('done');},1800);
+    });
+  });
+})();
+</script>
+</body>
+</html>
