@@ -485,7 +485,7 @@ footer .tiny { font-size:.78rem; margin-top:1rem; }
   <h2 class="sec"><span class="sec-num">04</span>Clean binding, and control that actually works</h2>
 
   <div class="stats">
-    <div class="stat"><div class="v">85%</div><div class="l">1-hop concept-swap success</div><div class="n">0.847 at &alpha;&asymp;2 (Layer 6, Table 1) &mdash; single-slot causal control</div></div>
+    <div class="stat"><div class="v">94.8%</div><div class="l">peak 1-hop concept-swap success</div><div class="n">best epoch; 0.847 (&asymp;85%) reported at &alpha;&asymp;2 (Table&nbsp;1)</div></div>
     <div class="stat"><div class="v">9&ndash;&infin;&times;</div><div class="l">disentanglement gain (MIG)</div><div class="n">&infin; in 1-hop (0.173 vs 0.000); 9.2&times; in 2-hop</div></div>
     <div class="stat"><div class="v">0.912</div><div class="l">unseen-template generalization</div><div class="n">Test-Unseen accuracy at Layer 6 vs 0.165 at Layer 0</div></div>
     <div class="stat"><div class="v">100%</div><div class="l">step-wise 2-hop binding</div><div class="n">perfectly diagonal at both the e&#8322; (r&#8321;) and e&#8323; (r&#8322;) steps</div></div>
@@ -579,7 +579,7 @@ footer .tiny { font-size:.78rem; margin-top:1rem; }
   <ul style="padding-left:1.1rem;">
     <li style="margin-bottom:.8rem;">Reframes SAE interpretability as an <b>alignment</b> problem: a post-training stage &mdash; analogous to instruction tuning or RLHF &mdash; turns a diagnostic tool into an operational, verifiable, controllable interface over a frozen model.</li>
     <li style="margin-bottom:.8rem;">Three post-training losses on a staged curriculum: <b>binding</b> (one slot per concept), <b>invariance</b> (no leakage into free features), and <b>sufficiency</b> (a value head predicts the answer from slots alone).</li>
-    <li style="margin-bottom:.8rem;">Clean single-slot control on 1-hop QA &mdash; 85% swap success (0.847 at &alpha;&asymp;2), one-to-one binding, 9&ndash;&infin;&times; disentanglement &mdash; and steering that preserves fluency while sharply cutting perplexity versus the no-SAE baseline.</li>
+    <li style="margin-bottom:.8rem;">Clean single-slot control on 1-hop QA &mdash; swap success up to 94.8% at the best epoch (0.847 reported at &alpha;&asymp;2), one-to-one binding, 9&ndash;&infin;&times; disentanglement &mdash; and steering that preserves fluency while sharply cutting perplexity versus the no-SAE baseline.</li>
     <li>Extends to composition and scale (100% step-wise 2-hop binding, 4&times; swap gain, 95.6% across 91 relations) while honestly documenting that binding &ne; full causal control in multi-hop reasoning.</li>
   </ul>
 </section>
